@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sunseeker_app.data.local.EventEntity
+import com.example.sunseeker_app.data.remote.SolarResult
+import com.example.sunseeker_app.data.remote.WeatherRepository
 import com.example.sunseeker_app.data.repository.EventsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
@@ -21,11 +23,15 @@ import javax.inject.Inject
 class CreateEventViewModel @Inject constructor(
     private val eventsRepository: EventsRepository,
     private val firebaseAuth: FirebaseAuth,
-    private val firebaseStorage: FirebaseStorage
+    private val firebaseStorage: FirebaseStorage,
+    private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
     private val _state = MutableLiveData<CreateEventState>()
     val state: LiveData<CreateEventState> = _state
+
+    private val _solarState = MutableLiveData<SolarState>()
+    val solarState: LiveData<SolarState> = _solarState
 
     fun loadEvent(eventId: String): LiveData<EventEntity?> = eventsRepository.getEventById(eventId)
 
@@ -112,6 +118,20 @@ class CreateEventViewModel @Inject constructor(
         }
     }
 
+    fun fetchSunTimes(latitude: Double, longitude: Double) {
+        _solarState.value = SolarState.Loading
+        viewModelScope.launch {
+            when (val result = weatherRepository.fetchSolarData(latitude, longitude)) {
+                is SolarResult.Success -> {
+                    _solarState.value = SolarState.Success(result.data)
+                }
+                is SolarResult.Error -> {
+                    _solarState.value = SolarState.Error(result.message)
+                }
+            }
+        }
+    }
+
     private suspend fun uploadImage(imageUri: Uri, userId: String): String {
         val ref = firebaseStorage.reference
             .child("events/$userId/${UUID.randomUUID()}.jpg")
@@ -124,4 +144,10 @@ sealed class CreateEventState {
     data object Loading : CreateEventState()
     data object Success : CreateEventState()
     data class Error(val message: String) : CreateEventState()
+}
+
+sealed class SolarState {
+    data object Loading : SolarState()
+    data class Success(val data: com.example.sunseeker_app.data.remote.SolarData) : SolarState()
+    data class Error(val message: String) : SolarState()
 }

@@ -13,6 +13,7 @@ import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentCreateEventBinding
 import com.example.sunseeker_app.ui.viewmodel.CreateEventState
 import com.example.sunseeker_app.ui.viewmodel.CreateEventViewModel
+import com.example.sunseeker_app.ui.viewmodel.SolarState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -61,6 +62,16 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
             pickImage.launch("image/*")
         }
 
+        binding.buttonFetchSunTimes.setOnClickListener {
+            val lat = binding.editLatitude.text?.toString()?.toDoubleOrNull()
+            val lng = binding.editLongitude.text?.toString()?.toDoubleOrNull()
+            if (lat == null || lng == null) {
+                Snackbar.make(binding.root, "Enter valid coordinates", Snackbar.LENGTH_SHORT).show()
+            } else {
+                viewModel.fetchSunTimes(lat, lng)
+            }
+        }
+
         binding.buttonSubmit.setOnClickListener {
             val title = binding.editTitle.text?.toString().orEmpty()
             val location = binding.editLocation.text?.toString().orEmpty()
@@ -91,6 +102,21 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 is CreateEventState.Error -> {
                     setLoading(false)
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                }
+            }
+        }
+
+        viewModel.solarState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is SolarState.Loading -> {
+                    binding.textSunTimes.text = "Loading sun times..."
+                }
+                is SolarState.Success -> {
+                    val data = state.data
+                    binding.textSunTimes.text = "Sunrise: ${data.sunrise}\nSunset: ${data.sunset}"
+                }
+                is SolarState.Error -> {
+                    binding.textSunTimes.text = state.message
                 }
             }
         }

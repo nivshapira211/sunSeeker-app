@@ -9,6 +9,7 @@ import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentFeedBinding
 import com.example.sunseeker_app.ui.viewmodel.FeedViewModel
 import com.example.sunseeker_app.ui.viewmodel.FeedState
+import com.example.sunseeker_app.ui.viewmodel.FeedJoinState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,13 +26,19 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFeedBinding.bind(view)
 
-        adapter = EventsAdapter(onJoinClick = { event ->
-            Snackbar.make(binding.root, "Joined ${event.location}", Snackbar.LENGTH_SHORT).show()
-        })
+        adapter = EventsAdapter(
+            onJoinClick = { event ->
+                viewModel.joinEvent(event.id)
+            },
+            onItemClick = { event ->
+                val action = FeedFragmentDirections.actionFeedFragmentToEventDetailsFragment(event.id)
+                findNavController().navigate(action)
+            }
+        )
         binding.recyclerEvents.adapter = adapter
 
         binding.fabCreateEvent.setOnClickListener {
-            val action = FeedFragmentDirections.actionFeedFragmentToCreateEventFragment()
+            val action = FeedFragmentDirections.actionFeedFragmentToCreateEventFragment(null)
             findNavController().navigate(action)
         }
 
@@ -47,6 +54,21 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                     binding.progressFeed.visibility = View.GONE
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                 }
+            }
+        }
+
+        viewModel.joinState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is FeedJoinState.Loading -> binding.progressFeed.visibility = View.VISIBLE
+                is FeedJoinState.Success -> {
+                    binding.progressFeed.visibility = View.GONE
+                    Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
+                }
+                is FeedJoinState.Error -> {
+                    binding.progressFeed.visibility = View.GONE
+                    Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                }
+                null -> Unit
             }
         }
     }

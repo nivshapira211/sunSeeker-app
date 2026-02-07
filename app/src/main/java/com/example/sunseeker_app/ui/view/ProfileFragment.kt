@@ -42,10 +42,17 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProfileBinding.bind(view)
 
-        adapter = EventsAdapter(onJoinClick = { event ->
-            val action = ProfileFragmentDirections.actionProfileFragmentToEventDetailsFragment(event.id)
-            findNavController().navigate(action)
-        }, joinLabel = "View")
+        adapter = EventsAdapter(
+            onJoinClick = { event ->
+                val action = ProfileFragmentDirections.actionProfileFragmentToEventDetailsFragment(event.id)
+                findNavController().navigate(action)
+            },
+            onItemClick = { event ->
+                val action = ProfileFragmentDirections.actionProfileFragmentToEventDetailsFragment(event.id)
+                findNavController().navigate(action)
+            },
+            joinLabel = "View"
+        )
         binding.recyclerMyEvents.adapter = adapter
 
         viewModel.myEvents.observe(viewLifecycleOwner) { events ->

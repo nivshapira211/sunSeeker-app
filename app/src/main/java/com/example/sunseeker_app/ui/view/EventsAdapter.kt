@@ -10,6 +10,7 @@ import com.example.sunseeker_app.databinding.ItemEventBinding
 
 class EventsAdapter(
     private val onJoinClick: (EventEntity) -> Unit,
+    private val onItemClick: (EventEntity) -> Unit,
     private val joinLabel: String = "Join"
 ) : ListAdapter<EventEntity, EventsAdapter.EventViewHolder>(DiffCallback) {
 
@@ -23,17 +24,23 @@ class EventsAdapter(
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        holder.bind(getItem(position), onJoinClick, joinLabel)
+        holder.bind(getItem(position), onJoinClick, onItemClick, joinLabel)
     }
 
     class EventViewHolder(
         private val binding: ItemEventBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: EventEntity, onJoinClick: (EventEntity) -> Unit, joinLabel: String) {
+        fun bind(
+            item: EventEntity,
+            onJoinClick: (EventEntity) -> Unit,
+            onItemClick: (EventEntity) -> Unit,
+            joinLabel: String
+        ) {
             binding.textTitle.text = item.title
             binding.textTime.text = item.time
             binding.buttonJoin.text = joinLabel
             binding.buttonJoin.setOnClickListener { onJoinClick(item) }
+            binding.root.setOnClickListener { onItemClick(item) }
         }
     }
 
