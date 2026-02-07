@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.sunseeker_app.data.local.EventEntity
 import com.example.sunseeker_app.data.repository.EventsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.viewModelScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

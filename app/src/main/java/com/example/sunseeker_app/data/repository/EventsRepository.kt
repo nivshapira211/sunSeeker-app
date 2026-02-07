@@ -5,7 +5,6 @@ import com.example.sunseeker_app.data.local.EventDao
 import com.example.sunseeker_app.data.local.EventEntity
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldValue
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.tasks.await
@@ -15,14 +14,13 @@ import javax.inject.Singleton
 @Singleton
 class EventsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val eventDao: EventDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val eventDao: EventDao
 ) {
     fun getEvents(): LiveData<List<EventEntity>> = eventDao.getAllEvents()
     fun getEventById(id: String): LiveData<EventEntity?> = eventDao.getEventById(id)
 
     suspend fun refreshEvents() {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             val snapshot = firestore.collection(EVENTS_COLLECTION).get().await()
             val events = snapshot.documents.mapNotNull { doc ->
                 val id = doc.getString("id") ?: doc.id
@@ -58,7 +56,7 @@ class EventsRepository @Inject constructor(
     }
 
     suspend fun joinEvent(eventId: String, userId: String) {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             firestore.collection(EVENTS_COLLECTION)
                 .document(eventId)
                 .update("attendees", FieldValue.arrayUnion(userId))
@@ -68,7 +66,7 @@ class EventsRepository @Inject constructor(
     }
 
     suspend fun createEvent(event: EventEntity) {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             val data = mapOf(
                 "id" to event.id,
                 "title" to event.title,
@@ -89,7 +87,7 @@ class EventsRepository @Inject constructor(
     }
 
     suspend fun updateEvent(eventId: String, updates: Map<String, Any?>) {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             firestore.collection(EVENTS_COLLECTION)
                 .document(eventId)
                 .update(updates)
@@ -99,7 +97,7 @@ class EventsRepository @Inject constructor(
     }
 
     suspend fun deleteEvent(eventId: String) {
-        withContext(ioDispatcher) {
+        withContext(Dispatchers.IO) {
             firestore.collection(EVENTS_COLLECTION)
                 .document(eventId)
                 .delete()

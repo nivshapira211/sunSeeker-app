@@ -3,7 +3,7 @@ package com.example.sunseeker_app.ui.viewmodel
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sunseeker_app.data.local.EventEntity
@@ -31,9 +31,7 @@ class ProfileViewModel @Inject constructor(
     private val _profileState = MutableLiveData<ProfileState>()
     val profileState: LiveData<ProfileState> = _profileState
 
-    val myEvents: LiveData<List<EventEntity>> = Transformations.map(
-        eventsRepository.getEvents()
-    ) { events ->
+    val myEvents: LiveData<List<EventEntity>> = eventsRepository.getEvents().map { events ->
         val uid = firebaseAuth.currentUser?.uid
         if (uid == null) emptyList() else events.filter { it.creatorId == uid }
     }
