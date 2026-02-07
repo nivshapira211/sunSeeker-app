@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentFeedBinding
 import com.example.sunseeker_app.ui.viewmodel.FeedViewModel
@@ -28,6 +29,11 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
             Snackbar.make(binding.root, "Joined ${event.location}", Snackbar.LENGTH_SHORT).show()
         })
         binding.recyclerEvents.adapter = adapter
+
+        binding.fabCreateEvent.setOnClickListener {
+            val action = FeedFragmentDirections.actionFeedFragmentToCreateEventFragment()
+            findNavController().navigate(action)
+        }
 
         viewModel.events.observe(viewLifecycleOwner) { events ->
             adapter.submitList(events)
