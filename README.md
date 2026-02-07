@@ -29,3 +29,21 @@ The primary goal of SunSeeker is to foster a community around the appreciation o
 ## Target Platform
 
 SunSeeker is designed as a mobile-first experience, optimized for use in the field while chasing the perfect horizon.
+
+## Firebase Setup (Required)
+
+Authentication uses Firebase. To run the app locally, add your Firebase config file and enable Email/Password auth:
+
+1. In the Firebase Console, create a project and register an Android app with the package name `com.example.sunseeker_app`.
+2. Download `google-services.json`.
+3. Place it at: `app/google-services.json`.
+4. In Firebase Console, enable **Authentication -> Sign-in method -> Email/Password**.
+
+## Firebase Storage (Required for Event Images)
+
+Event images are uploaded to Firebase Storage. To enable:
+
+1. In Firebase Console, open **Storage** and create a default bucket.
+2. For development, allow authenticated users to read/write to `events/**` and `profiles/**`.
+
+If you need me to wire additional Firebase settings (e.g., Firestore rules or SHA-1/256), share them and I’ll update the project config and docs.
