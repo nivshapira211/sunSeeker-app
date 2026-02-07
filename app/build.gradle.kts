@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.sunseeker_app"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.sunseeker_app"

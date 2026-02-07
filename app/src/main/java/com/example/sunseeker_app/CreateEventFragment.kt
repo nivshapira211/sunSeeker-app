@@ -5,24 +5,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.sunseeker_app.databinding.FragmentFeedBinding
+import androidx.navigation.fragment.navArgs
+import com.example.sunseeker_app.databinding.FragmentCreateEventBinding
 
-class FeedFragment : Fragment() {
-    private var _binding: FragmentFeedBinding? = null
+class CreateEventFragment : Fragment() {
+    private var _binding: FragmentCreateEventBinding? = null
     private val binding get() = _binding!!
+    private val args: CreateEventFragmentArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentFeedBinding.inflate(inflater, container, false)
+        _binding = FragmentCreateEventBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        binding.addEventFab.setOnClickListener {
-            val action = FeedFragmentDirections.actionFeedFragmentToCreateEventFragment(null)
-            findNavController().navigate(action)
+        val eventId = args.eventId
+        if (eventId != null) {
+            binding.saveEventButton.text = "Update Event"
+            // TODO: Load event data and populate fields
         }
     }
 

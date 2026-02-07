@@ -5,12 +5,9 @@ import androidx.room.*
 
 @Dao
 interface UserDao {
-    @Query("SELECT * FROM users WHERE userId = :userId")
-    fun getUserById(userId: String): LiveData<User?>
+    @Query("SELECT * FROM users WHERE userId = :id")
+    fun getUserById(id: String): LiveData<User?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUser(user: User)
-
-    @Update
-    suspend fun updateUser(user: User)
+    @Upsert
+    suspend fun upsertUser(user: User)
 }

@@ -3,16 +3,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/feedFragment">
+    app:startDestination="@id/loginFragment">
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.sunseeker_app.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_feedFragment"
+            app:destination="@id/feedFragment"
+            app:popUpTo="@id/loginFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
 
     <fragment
         android:id="@+id/feedFragment"
         android:name="com.example.sunseeker_app.FeedFragment"
-        android:label="Feed"
+        android:label="SunSeeker Feed"
         tools:layout="@layout/fragment_feed">
         <action
             android:id="@+id/action_feedFragment_to_eventDetailFragment"
             app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_feedFragment_to_createEventFragment"
+            app:destination="@id/createEventFragment" />
     </fragment>
 
     <fragment
@@ -29,16 +44,41 @@
         android:id="@+id/profileFragment"
         android:name="com.example.sunseeker_app.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/eventDetailFragment"
         android:name="com.example.sunseeker_app.EventDetailFragment"
-        android:label="Event Detail"
+        android:label="Event Details"
         tools:layout="@layout/fragment_event_detail">
         <argument
             android:name="eventId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_eventDetailFragment_to_createEventFragment"
+            app:destination="@id/createEventFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/createEventFragment"
+        android:name="com.example.sunseeker_app.CreateEventFragment"
+        android:label="Host an Event"
+        tools:layout="@layout/fragment_create_event">
+        <argument
+            android:name="eventId"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.sunseeker_app.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile" />
 
 </navigation>
