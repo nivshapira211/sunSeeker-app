@@ -16,6 +16,9 @@ import com.example.sunseeker_app.ui.viewmodel.CreateEventViewModel
 import com.example.sunseeker_app.ui.viewmodel.SolarState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 
 @AndroidEntryPoint
 class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
@@ -176,6 +179,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
             }
         }
 
+
         viewModel.solarState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is SolarState.Loading -> {
@@ -187,8 +191,8 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                     binding.chipGroupSunTimes.visibility = View.VISIBLE
                     
                     val data = state.data
-                    binding.chipSunrise.text = "Sunrise: ${data.sunrise}"
-                    binding.chipSunset.text = "Sunset: ${data.sunset}"
+                    binding.chipSunrise.text = "Sunrise: ${formatSolarTime(data.sunrise)}"
+                    binding.chipSunset.text = "Sunset: ${formatSolarTime(data.sunset)}"
                 }
                 is SolarState.Error -> {
                     binding.buttonFetchSunTimes.text = "Retry Sun Times"
@@ -197,6 +201,16 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    private fun formatSolarTime(isoString: String): String {
+        return try {
+            val zdt = ZonedDateTime.parse(isoString)
+            val localZdt = zdt.withZoneSameInstant(ZoneId.systemDefault())
+            localZdt.format(DateTimeFormatter.ofPattern("h:mm a"))
+        } catch (e: Exception) {
+            isoString // Fallback to original string if parsing fails
         }
     }
 
