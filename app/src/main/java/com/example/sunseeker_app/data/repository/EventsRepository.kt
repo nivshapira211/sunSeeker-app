@@ -10,6 +10,8 @@ import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.tasks.await
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,12 +20,16 @@ class EventsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val eventDao: EventDao
 ) {
+    private val timeFormat = SimpleDateFormat("MMM dd, yyyy h:mm a", Locale.getDefault())
+
     /**
-     * Returns all events as domain models.
+     * Returns all events as domain models, sorted by event time (earliest first).
      * Mapping from EventEntity → Event happens here so the UI layer never sees Room entities.
      */
     fun getEvents(): LiveData<List<Event>> = eventDao.getAllEvents().map { entities ->
-        entities.map { it.toDomain() }
+        entities.map { it.toDomain() }.sortedBy { event ->
+            try { timeFormat.parse(event.time)?.time } catch (_: Exception) { Long.MAX_VALUE }
+        }
     }
 
     fun getEventById(id: String): LiveData<Event?> = eventDao.getEventById(id).map { entity ->
