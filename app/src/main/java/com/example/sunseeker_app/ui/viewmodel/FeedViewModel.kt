@@ -57,6 +57,24 @@ class FeedViewModel @Inject constructor(
             }
         }
     }
+
+    fun leaveEvent(eventId: String) {
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId == null) {
+            _joinState.value = FeedJoinState.Error("You must be logged in")
+            return
+        }
+
+        _joinState.value = FeedJoinState.Loading
+        viewModelScope.launch {
+            try {
+                eventsRepository.leaveEvent(eventId, userId)
+                _joinState.value = FeedJoinState.Success("Left event")
+            } catch (e: Exception) {
+                _joinState.value = FeedJoinState.Error(e.message ?: "Leave failed")
+            }
+        }
+    }
 }
 
 sealed class FeedState {

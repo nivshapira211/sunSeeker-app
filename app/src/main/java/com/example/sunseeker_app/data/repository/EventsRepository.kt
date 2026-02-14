@@ -57,10 +57,21 @@ class EventsRepository @Inject constructor(
 
     suspend fun joinEvent(eventId: String, userId: String) {
         withContext(Dispatchers.IO) {
-            firestore.collection(EVENTS_COLLECTION)
-                .document(eventId)
-                .update("attendees", FieldValue.arrayUnion(userId))
-                .await()
+            val eventRef = firestore.collection(EVENTS_COLLECTION).document(eventId)
+            
+            // Check if user is already joined to prevent duplicates (though Set handles this)
+            // or just rely on arrayUnion
+            eventRef.update("attendees", FieldValue.arrayUnion(userId)).await()
+            eventRef.update("participantsCount", FieldValue.increment(1)).await()
+            refreshEvents()
+        }
+    }
+
+    suspend fun leaveEvent(eventId: String, userId: String) {
+        withContext(Dispatchers.IO) {
+            val eventRef = firestore.collection(EVENTS_COLLECTION).document(eventId)
+            eventRef.update("attendees", FieldValue.arrayRemove(userId)).await()
+            eventRef.update("participantsCount", FieldValue.increment(-1)).await()
             refreshEvents()
         }
     }

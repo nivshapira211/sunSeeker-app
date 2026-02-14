@@ -26,14 +26,22 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFeedBinding.bind(view)
 
+        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+
         adapter = EventsAdapter(
             onJoinClick = { event ->
-                viewModel.joinEvent(event.id)
+                val isJoined = currentUserId != null && event.attendeeIds.contains(currentUserId)
+                if (isJoined) {
+                    viewModel.leaveEvent(event.id)
+                } else {
+                    viewModel.joinEvent(event.id)
+                }
             },
             onItemClick = { event ->
                 val action = FeedFragmentDirections.actionFeedFragmentToEventDetailsFragment(event.id)
                 findNavController().navigate(action)
-            }
+            },
+            currentUserId = currentUserId
         )
         binding.recyclerEvents.adapter = adapter
 

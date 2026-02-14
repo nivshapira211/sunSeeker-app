@@ -60,14 +60,27 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             // Owner actions
             val isOwner = viewModel.isOwner(event)
             binding.ownerActionsContainer.visibility = if (isOwner) View.VISIBLE else View.GONE
-            if (isOwner) {
-                // If owner, join button might be redundant or we change text?
-                // For now keep join button as is (maybe owner wants to join/leave?)
-            }
-        }
+            
+            // Join/Leave button logic
+            val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            val isJoined = event.attendeeIds.contains(userId)
+            
+            val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
+            val errorColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
 
-        binding.buttonJoinEvent.setOnClickListener {
-            viewModel.joinEvent(eventId)
+            binding.buttonJoinEvent.text = if (isJoined) "Leave Event" else "Join Event"
+            binding.buttonJoinEvent.setBackgroundColor(
+                if (isJoined) errorColor 
+                else primaryColor
+            )
+            
+            binding.buttonJoinEvent.setOnClickListener {
+                if (isJoined) {
+                    viewModel.leaveEvent(eventId)
+                } else {
+                    viewModel.joinEvent(eventId)
+                }
+            }
         }
 
         binding.buttonEditEvent.setOnClickListener {

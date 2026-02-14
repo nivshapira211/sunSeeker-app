@@ -42,16 +42,22 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProfileBinding.bind(view)
 
+        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+
         adapter = EventsAdapter(
             onJoinClick = { event ->
-                val action = ProfileFragmentDirections.actionProfileFragmentToEventDetailsFragment(event.id)
-                findNavController().navigate(action)
+                val isJoined = currentUserId != null && event.attendeeIds.contains(currentUserId)
+                if (isJoined) {
+                    viewModel.leaveEvent(event.id)
+                } else {
+                    viewModel.joinEvent(event.id)
+                }
             },
             onItemClick = { event ->
                 val action = ProfileFragmentDirections.actionProfileFragmentToEventDetailsFragment(event.id)
                 findNavController().navigate(action)
             },
-            joinLabel = "View"
+            currentUserId = currentUserId
         )
         binding.recyclerMyEvents.adapter = adapter
 
