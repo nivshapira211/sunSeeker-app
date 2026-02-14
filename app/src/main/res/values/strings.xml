@@ -58,4 +58,9 @@
     <string name="profile_events_count_format">(%1$d)</string>
     <string name="action_edit_profile">Edit Profile</string>
     <string name="action_logout">Logout</string>
+
+    <!-- Section Headers -->
+    <string name="section_upcoming_events">Upcoming Events</string>
+    <string name="section_past_events">Past Events</string>
+    <string name="section_expand_toggle">Expand or collapse section</string>
 </resources>

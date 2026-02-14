@@ -20,27 +20,26 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
     private val binding get() = _binding!!
 
     private val viewModel: FeedViewModel by viewModels()
-    private lateinit var adapter: EventsAdapter
+    private lateinit var adapter: FeedAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFeedBinding.bind(view)
 
-        // Get currentUserId from ViewModel — never access Firebase directly
         val currentUserId = viewModel.currentUserId
 
-        adapter = EventsAdapter(
+        adapter = FeedAdapter(
             onJoinClick = { event ->
                 val isJoined = currentUserId != null && event.attendeeIds.contains(currentUserId)
-                if (isJoined) {
-                    viewModel.leaveEvent(event.id)
-                } else {
-                    viewModel.joinEvent(event.id)
-                }
+                if (isJoined) viewModel.leaveEvent(event.id) else viewModel.joinEvent(event.id)
             },
             onItemClick = { event ->
                 val action = FeedFragmentDirections.actionFeedFragmentToEventDetailsFragment(event.id)
                 findNavController().navigate(action)
+            },
+            onSectionToggle = { title ->
+                if (title == "Past Events") viewModel.togglePastSection()
+                else viewModel.toggleUpcomingSection()
             },
             currentUserId = currentUserId
         )
@@ -51,8 +50,8 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
             findNavController().navigate(action)
         }
 
-        viewModel.events.observe(viewLifecycleOwner) { events ->
-            adapter.submitList(events)
+        viewModel.feedItems.observe(viewLifecycleOwner) { items ->
+            adapter.submitList(items)
         }
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
