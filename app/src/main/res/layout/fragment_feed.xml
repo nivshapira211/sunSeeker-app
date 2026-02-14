@@ -19,12 +19,13 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/ic_solar_sun"
+            android:importantForAccessibility="no"
             app:tint="?attr/colorPrimary"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SunSeeker"
+            android:text="@string/feed_title"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_marginStart="12dp"
@@ -58,7 +59,7 @@
         android:id="@+id/fab_create_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Create event"
+        android:contentDescription="@string/feed_create_event"
         app:srcCompat="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

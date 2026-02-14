@@ -1,5 +1,6 @@
 package com.example.sunseeker_app.ui.view
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -43,8 +44,10 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             binding.textTime.text = event.time
             binding.textDescription.text = event.description.ifBlank { "No description provided." }
             binding.textAttendees.text =
-                if (event.attendeeIds.isEmpty()) "No attendees yet"
-                else "${event.attendeeIds.size} people attending" // Simplify for now
+                if (event.attendeeIds.isEmpty()) getString(R.string.event_attendees_none)
+                else getString(R.string.event_attendees_none).let {
+                    "${event.attendeeIds.size} people attending"
+                }
 
             // Image
             if (event.imageUrl.isNotBlank()) {
@@ -68,10 +71,11 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
             val errorColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
 
-            binding.buttonJoinEvent.text = if (isJoined) "Leave Event" else "Join Event"
-            binding.buttonJoinEvent.setBackgroundColor(
-                if (isJoined) errorColor 
-                else primaryColor
+            binding.buttonJoinEvent.text = getString(
+                if (isJoined) R.string.action_leave_event else R.string.action_join_event
+            )
+            binding.buttonJoinEvent.backgroundTintList = ColorStateList.valueOf(
+                if (isJoined) errorColor else primaryColor
             )
             
             binding.buttonJoinEvent.setOnClickListener {

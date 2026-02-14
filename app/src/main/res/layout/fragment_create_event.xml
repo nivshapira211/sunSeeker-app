@@ -16,7 +16,7 @@
             android:id="@+id/text_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Create Event"
+            android:text="@string/create_event_title"
             android:textAppearance="@style/TextAppearance.Material3.HeadlineMedium"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
@@ -30,7 +30,7 @@
             android:layout_marginTop="24dp"
             app:cardElevation="0dp"
             app:strokeWidth="1dp"
-            app:strokeColor="@android:color/darker_gray"
+            app:strokeColor="?attr/colorOutline"
             app:cardCornerRadius="16dp"
             app:cardBackgroundColor="@android:color/transparent"
             app:layout_constraintTop_toBottomOf="@id/text_title">
@@ -45,7 +45,7 @@
                     android:id="@+id/input_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Event Title"
+                    android:hint="@string/hint_event_title"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="Description"
+                    android:hint="@string/hint_description"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -97,13 +97,14 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@android:drawable/ic_menu_mylocation" 
+                        android:src="@android:drawable/ic_menu_mylocation"
+                        android:importantForAccessibility="no"
                         app:tint="?attr/colorPrimary" />
                          
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Location"
+                        android:text="@string/label_location"
                         android:layout_marginStart="8dp"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
                 </LinearLayout>
@@ -112,7 +113,7 @@
                     android:id="@+id/text_selected_location"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No location selected"
+                    android:text="@string/label_no_location"
                     android:layout_marginTop="8dp"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
@@ -122,7 +123,7 @@
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick Location"
+                    android:text="@string/action_pick_location"
                     android:layout_marginTop="12dp" />
                     
                 <com.google.android.material.chip.ChipGroup
@@ -135,13 +136,13 @@
                         android:id="@+id/chip_sunrise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sunrise: --:--"
+                        android:text="@string/label_sunrise"
                         style="@style/Widget.Material3.Chip.Suggestion" />
                     <com.google.android.material.chip.Chip
                         android:id="@+id/chip_sunset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sunset: --:--"
+                        android:text="@string/label_sunset"
                         style="@style/Widget.Material3.Chip.Suggestion" />
                 </com.google.android.material.chip.ChipGroup>
 
@@ -150,7 +151,7 @@
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Refresh Sun Times"
+                    android:text="@string/action_refresh_sun"
                     android:layout_marginTop="8dp"
                     android:visibility="gone"/>
 
@@ -181,13 +182,14 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_location_on_24" 
+                        android:src="@drawable/ic_location_on_24"
+                        android:importantForAccessibility="no"
                         app:tint="?attr/colorPrimary" />
                          
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Date &amp; Time"
+                        android:text="@string/label_date_time"
                         android:layout_marginStart="8dp"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
                 </LinearLayout>
@@ -196,7 +198,7 @@
                     android:id="@+id/text_selected_time"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No time selected"
+                    android:text="@string/label_no_time"
                     android:layout_marginTop="8dp"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?android:attr/textColorSecondary" />
@@ -206,7 +208,7 @@
                     style="@style/Widget.Material3.Button.TonalButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pick Date &amp; Time"
+                    android:text="@string/action_pick_time"
                     android:layout_marginTop="12dp" />
 
             </LinearLayout>
@@ -219,6 +221,7 @@
             android:layout_marginTop="24dp"
             android:scaleType="centerCrop"
             android:src="@drawable/event_placeholder"
+            android:contentDescription="@string/event_image_description"
             app:layout_constraintTop_toBottomOf="@id/card_datetime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -227,7 +230,7 @@
             android:id="@+id/text_add_photo_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+ Add Photo"
+            android:text="@string/label_add_photo"
             android:elevation="4dp"
             android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
             app:layout_constraintTop_toTopOf="@id/image_preview"
@@ -239,7 +242,7 @@
             android:id="@+id/button_submit"
             android:layout_width="0dp"
             android:layout_height="56dp"
-            android:text="Publish Event"
+            android:text="@string/action_publish"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="24dp"
             style="@style/Widget.Material3.Button"
