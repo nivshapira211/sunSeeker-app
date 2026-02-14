@@ -21,11 +21,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateEventViewModel @Inject constructor(
+    private val application: android.app.Application,
     private val eventsRepository: EventsRepository,
     private val firebaseAuth: FirebaseAuth,
     private val firebaseStorage: FirebaseStorage,
     private val weatherRepository: WeatherRepository
-) : ViewModel() {
+) : androidx.lifecycle.AndroidViewModel(application) {
+
+    // ... existing properties ...
 
     private val _state = MutableLiveData<CreateEventState>()
     val state: LiveData<CreateEventState> = _state
@@ -38,6 +41,7 @@ class CreateEventViewModel @Inject constructor(
     fun createEvent(
         title: String,
         location: String,
+        time: String,
         description: String,
         imageUri: Uri?
     ) {
@@ -60,7 +64,7 @@ class CreateEventViewModel @Inject constructor(
                     id = eventId,
                     title = title.trim(),
                     location = location.trim(),
-                    time = "TBD",
+                    time = time,
                     description = description.trim(),
                     imageUrl = imageUrl,
                     participantsCount = 0,
@@ -79,6 +83,7 @@ class CreateEventViewModel @Inject constructor(
         eventId: String,
         title: String,
         location: String,
+        time: String,
         description: String,
         imageUri: Uri?,
         existingImageUrl: String
@@ -107,6 +112,7 @@ class CreateEventViewModel @Inject constructor(
                 val updates = mapOf(
                     "title" to title.trim(),
                     "location" to location.trim(),
+                    "time" to time,
                     "description" to description.trim(),
                     "imageUrl" to imageUrl
                 )
@@ -135,8 +141,22 @@ class CreateEventViewModel @Inject constructor(
     private suspend fun uploadImage(imageUri: Uri, userId: String): String {
         val ref = firebaseStorage.reference
             .child("events/$userId/${UUID.randomUUID()}.jpg")
-        ref.putFile(imageUri).await()
-        return ref.downloadUrl.await().toString()
+        
+        try {
+            val inputStream = application.contentResolver.openInputStream(imageUri)
+                ?: throw Exception("Could not open stream for image")
+            
+            ref.putStream(inputStream).await()
+            // Stream is closed by putStream or GC, but safer to let putStream handle it
+        } catch (e: Exception) {
+            throw Exception("Image upload failed (Stream): ${e.message}")
+        }
+
+        try {
+            return ref.downloadUrl.await().toString()
+        } catch (e: Exception) {
+             throw Exception("Getting URL failed: ${e.message}")
+        }
     }
 }
 

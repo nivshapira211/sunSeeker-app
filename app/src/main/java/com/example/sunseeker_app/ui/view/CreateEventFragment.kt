@@ -43,6 +43,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     private var currentLat: Double? = null
     private var currentLng: Double? = null
     private var selectedLocationName: String? = null
+    private var selectedDateTime: java.util.Calendar? = null
 
     private val startAutocomplete = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -97,6 +98,8 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 
                 selectedLocationName = event.location
                 binding.textSelectedLocation.text = event.location
+                binding.textSelectedTime.text = event.time
+                binding.textSelectedTime.setTextColor(resources.getColor(android.R.color.black, null))
                 
                 existingImageUrl = event.imageUrl
                 if (existingImageUrl.isNotBlank() && selectedImageUri == null) {
@@ -135,10 +138,15 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
             }
         }
 
+        binding.buttonPickTime.setOnClickListener {
+            showDateTimePicker()
+        }
+
         binding.buttonSubmit.setOnClickListener {
             val title = binding.editTitle.text?.toString().orEmpty()
             val location = selectedLocationName.orEmpty()
             val description = binding.editDescription.text?.toString().orEmpty()
+            val timeString = binding.textSelectedTime.text.toString()
             
             if (title.isBlank()) {
                 Snackbar.make(binding.root, "Please enter a title", Snackbar.LENGTH_SHORT).show()
@@ -149,14 +157,32 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 Snackbar.make(binding.root, "Please select a location", Snackbar.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            
+            if (selectedDateTime == null && eventId == null) {
+                 Snackbar.make(binding.root, "Please select a time", Snackbar.LENGTH_SHORT).show()
+                 return@setOnClickListener
+            }
+
+            // If editing and no new time selected, keep existing (logic handled in ViewModel or here)
+            // For now, let's assume if text is not "No time selected", we have a time.
+            
+            val finalTime = if (selectedDateTime != null) {
+                val format = java.text.SimpleDateFormat("MMM dd, yyyy h:mm a", java.util.Locale.getDefault())
+                format.format(selectedDateTime!!.time)
+            } else {
+                // If editing, we might want to keep original time if not changed. 
+                // But for simplicity, we require picking time if it was TBD or just pass the string if it's already set.
+               if (eventId != null) binding.textSelectedTime.text.toString() else "TBD"
+            }
 
             if (eventId == null) {
-                viewModel.createEvent(title, location, description, selectedImageUri)
+                viewModel.createEvent(title, location, finalTime, description, selectedImageUri)
             } else {
                 viewModel.updateEvent(
                     eventId,
                     title,
                     location,
+                    finalTime,
                     description,
                     selectedImageUri,
                     existingImageUrl
@@ -202,6 +228,28 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 }
             }
         }
+    }
+
+    private fun showDateTimePicker() {
+        val currentDateTime = java.util.Calendar.getInstance()
+        val startYear = currentDateTime.get(java.util.Calendar.YEAR)
+        val startMonth = currentDateTime.get(java.util.Calendar.MONTH)
+        val startDay = currentDateTime.get(java.util.Calendar.DAY_OF_MONTH)
+        val startHour = currentDateTime.get(java.util.Calendar.HOUR_OF_DAY)
+        val startMinute = currentDateTime.get(java.util.Calendar.MINUTE)
+
+        android.app.DatePickerDialog(requireContext(), { _, year, month, day ->
+            android.app.TimePickerDialog(requireContext(), { _, hour, minute ->
+                val pickedDateTime = java.util.Calendar.getInstance()
+                pickedDateTime.set(year, month, day, hour, minute)
+                selectedDateTime = pickedDateTime
+                
+                val format = java.text.SimpleDateFormat("MMM dd, yyyy h:mm a", java.util.Locale.getDefault())
+                binding.textSelectedTime.text = format.format(pickedDateTime.time)
+                binding.textSelectedTime.setTextColor(resources.getColor(android.R.color.black, null))
+                
+            }, startHour, startMinute, false).show()
+        }, startYear, startMonth, startDay).show()
     }
 
     private fun formatSolarTime(isoString: String): String {

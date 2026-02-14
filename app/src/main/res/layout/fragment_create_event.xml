@@ -9,7 +9,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:paddingBottom="120dp">
 
         <TextView
             android:id="@+id/text_title"
@@ -156,6 +157,61 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_datetime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardElevation="2dp"
+            app:cardCornerRadius="12dp"
+            app:layout_constraintTop_toBottomOf="@id/card_location">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_location_on_24" 
+                        app:tint="?attr/colorPrimary" />
+                         
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date &amp; Time"
+                        android:layout_marginStart="8dp"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/text_selected_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No time selected"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?android:attr/textColorSecondary" />
+                    
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_pick_time"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pick Date &amp; Time"
+                    android:layout_marginTop="12dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <ImageView
             android:id="@+id/image_preview"
             android:layout_width="0dp"
@@ -163,7 +219,7 @@
             android:layout_marginTop="24dp"
             android:scaleType="centerCrop"
             android:src="@drawable/event_placeholder"
-            app:layout_constraintTop_toBottomOf="@id/card_location"
+            app:layout_constraintTop_toBottomOf="@id/card_datetime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
             
