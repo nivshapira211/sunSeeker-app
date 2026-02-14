@@ -41,6 +41,16 @@ class EventsAdapter(
             binding.buttonJoin.text = joinLabel
             binding.buttonJoin.setOnClickListener { onJoinClick(item) }
             binding.root.setOnClickListener { onItemClick(item) }
+
+            if (item.imageUrl.isNotBlank()) {
+                com.bumptech.glide.Glide.with(binding.root.context)
+                    .load(item.imageUrl)
+                    .centerCrop()
+                    .placeholder(com.example.sunseeker_app.R.drawable.event_placeholder)
+                    .into(binding.imageEvent)
+            } else {
+                binding.imageEvent.setImageResource(com.example.sunseeker_app.R.drawable.event_placeholder)
+            }
         }
     }
 

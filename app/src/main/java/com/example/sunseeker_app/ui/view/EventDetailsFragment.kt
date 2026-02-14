@@ -27,15 +27,43 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
         _binding = FragmentEventDetailsBinding.bind(view)
 
         val eventId = args.eventId
+        
+        // Setup toolbar
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.setSupportActionBar(binding.toolbar)
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.title = ""
+        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+
         viewModel.getEvent(eventId).observe(viewLifecycleOwner) { event ->
             if (event == null) return@observe
-            binding.textDescription.text = event.description.ifBlank { event.location }
+            
+            // Text info
+            binding.textTitle.text = event.title
+            binding.textLocation.text = event.location
+            binding.textTime.text = event.time
+            binding.textDescription.text = event.description.ifBlank { "No description provided." }
             binding.textAttendees.text =
                 if (event.attendeeIds.isEmpty()) "No attendees yet"
-                else event.attendeeIds.joinToString(separator = "\n")
+                else "${event.attendeeIds.size} people attending" // Simplify for now
+
+            // Image
+            if (event.imageUrl.isNotBlank()) {
+                 com.bumptech.glide.Glide.with(this)
+                    .load(event.imageUrl)
+                    .centerCrop()
+                    .placeholder(com.example.sunseeker_app.R.drawable.event_placeholder)
+                    .into(binding.imageEventDetail)
+            } else {
+                 binding.imageEventDetail.setImageResource(com.example.sunseeker_app.R.drawable.event_placeholder)
+            }
+
+            // Owner actions
             val isOwner = viewModel.isOwner(event)
-            binding.buttonEditEvent.visibility = if (isOwner) View.VISIBLE else View.GONE
-            binding.buttonDeleteEvent.visibility = if (isOwner) View.VISIBLE else View.GONE
+            binding.ownerActionsContainer.visibility = if (isOwner) View.VISIBLE else View.GONE
+            if (isOwner) {
+                // If owner, join button might be redundant or we change text?
+                // For now keep join button as is (maybe owner wants to join/leave?)
+            }
         }
 
         binding.buttonJoinEvent.setOnClickListener {
