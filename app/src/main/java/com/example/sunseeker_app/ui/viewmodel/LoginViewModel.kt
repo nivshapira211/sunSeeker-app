@@ -30,7 +30,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun isUserLoggedIn(): Boolean {
-        return authRepository.getCurrentUser() != null
+        return authRepository.isLoggedIn()
     }
 }
 

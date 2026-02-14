@@ -9,7 +9,7 @@ import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentFeedBinding
 import com.example.sunseeker_app.ui.viewmodel.FeedViewModel
 import com.example.sunseeker_app.ui.viewmodel.FeedState
-import com.example.sunseeker_app.ui.viewmodel.FeedJoinState
+import com.example.sunseeker_app.ui.viewmodel.UiState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,7 +26,8 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentFeedBinding.bind(view)
 
-        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        // Get currentUserId from ViewModel — never access Firebase directly
+        val currentUserId = viewModel.currentUserId
 
         adapter = EventsAdapter(
             onJoinClick = { event ->
@@ -67,12 +68,12 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
 
         viewModel.joinState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is FeedJoinState.Loading -> binding.progressFeed.visibility = View.VISIBLE
-                is FeedJoinState.Success -> {
+                is UiState.Loading -> binding.progressFeed.visibility = View.VISIBLE
+                is UiState.Success -> {
                     binding.progressFeed.visibility = View.GONE
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
                 }
-                is FeedJoinState.Error -> {
+                is UiState.Error -> {
                     binding.progressFeed.visibility = View.GONE
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                 }

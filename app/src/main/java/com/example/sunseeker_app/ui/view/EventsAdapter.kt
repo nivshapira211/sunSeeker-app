@@ -7,14 +7,14 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sunseeker_app.R
-import com.example.sunseeker_app.data.local.EventEntity
+import com.example.sunseeker_app.data.model.Event
 import com.example.sunseeker_app.databinding.ItemEventBinding
 
 class EventsAdapter(
-    private val onJoinClick: (EventEntity) -> Unit,
-    private val onItemClick: (EventEntity) -> Unit,
+    private val onJoinClick: (Event) -> Unit,
+    private val onItemClick: (Event) -> Unit,
     private val currentUserId: String? = null
-) : ListAdapter<EventEntity, EventsAdapter.EventViewHolder>(DiffCallback) {
+) : ListAdapter<Event, EventsAdapter.EventViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val binding = ItemEventBinding.inflate(
@@ -33,9 +33,9 @@ class EventsAdapter(
         private val binding: ItemEventBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(
-            item: EventEntity,
-            onJoinClick: (EventEntity) -> Unit,
-            onItemClick: (EventEntity) -> Unit,
+            item: Event,
+            onJoinClick: (Event) -> Unit,
+            onItemClick: (Event) -> Unit,
             currentUserId: String?
         ) {
             binding.textTitle.text = item.title
@@ -74,12 +74,12 @@ class EventsAdapter(
     }
 
     private companion object {
-        val DiffCallback = object : DiffUtil.ItemCallback<EventEntity>() {
-            override fun areItemsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
+        val DiffCallback = object : DiffUtil.ItemCallback<Event>() {
+            override fun areItemsTheSame(oldItem: Event, newItem: Event): Boolean {
                 return oldItem.id == newItem.id
             }
 
-            override fun areContentsTheSame(oldItem: EventEntity, newItem: EventEntity): Boolean {
+            override fun areContentsTheSame(oldItem: Event, newItem: Event): Boolean {
                 return oldItem == newItem
             }
         }

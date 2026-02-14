@@ -10,7 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentEventDetailsBinding
 import com.example.sunseeker_app.ui.viewmodel.EventViewModel
-import com.example.sunseeker_app.ui.viewmodel.ActionState
+import com.example.sunseeker_app.ui.viewmodel.UiState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,27 +45,25 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             binding.textDescription.text = event.description.ifBlank { "No description provided." }
             binding.textAttendees.text =
                 if (event.attendeeIds.isEmpty()) getString(R.string.event_attendees_none)
-                else getString(R.string.event_attendees_none).let {
-                    "${event.attendeeIds.size} people attending"
-                }
+                else "${event.attendeeIds.size} people attending"
 
             // Image
             if (event.imageUrl.isNotBlank()) {
                  com.bumptech.glide.Glide.with(this)
                     .load(event.imageUrl)
                     .centerCrop()
-                    .placeholder(com.example.sunseeker_app.R.drawable.event_placeholder)
+                    .placeholder(R.drawable.event_placeholder)
                     .into(binding.imageEventDetail)
             } else {
-                 binding.imageEventDetail.setImageResource(com.example.sunseeker_app.R.drawable.event_placeholder)
+                 binding.imageEventDetail.setImageResource(R.drawable.event_placeholder)
             }
 
             // Owner actions
             val isOwner = viewModel.isOwner(event)
             binding.ownerActionsContainer.visibility = if (isOwner) View.VISIBLE else View.GONE
             
-            // Join/Leave button logic
-            val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            // Join/Leave button logic — userId from ViewModel, not Firebase directly
+            val userId = viewModel.currentUserId
             val isJoined = event.attendeeIds.contains(userId)
             
             val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
@@ -99,12 +97,12 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
 
         viewModel.joinState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is ActionState.Loading -> setLoading(true)
-                is ActionState.Success -> {
+                is UiState.Loading -> setLoading(true)
+                is UiState.Success -> {
                     setLoading(false)
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
                 }
-                is ActionState.Error -> {
+                is UiState.Error -> {
                     setLoading(false)
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                 }

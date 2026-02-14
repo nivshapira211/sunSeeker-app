@@ -1,8 +1,10 @@
 package com.example.sunseeker_app.data.repository
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
 import com.example.sunseeker_app.data.local.EventDao
 import com.example.sunseeker_app.data.local.EventEntity
+import com.example.sunseeker_app.data.model.Event
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FieldValue
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +18,17 @@ class EventsRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val eventDao: EventDao
 ) {
-    fun getEvents(): LiveData<List<EventEntity>> = eventDao.getAllEvents()
-    fun getEventById(id: String): LiveData<EventEntity?> = eventDao.getEventById(id)
+    /**
+     * Returns all events as domain models.
+     * Mapping from EventEntity → Event happens here so the UI layer never sees Room entities.
+     */
+    fun getEvents(): LiveData<List<Event>> = eventDao.getAllEvents().map { entities ->
+        entities.map { it.toDomain() }
+    }
+
+    fun getEventById(id: String): LiveData<Event?> = eventDao.getEventById(id).map { entity ->
+        entity?.toDomain()
+    }
 
     suspend fun refreshEvents() {
         withContext(Dispatchers.IO) {
@@ -55,9 +66,6 @@ class EventsRepository @Inject constructor(
     suspend fun joinEvent(eventId: String, userId: String) {
         withContext(Dispatchers.IO) {
             val eventRef = firestore.collection(EVENTS_COLLECTION).document(eventId)
-            
-            // Check if user is already joined to prevent duplicates (though Set handles this)
-            // or just rely on arrayUnion
             eventRef.update("attendees", FieldValue.arrayUnion(userId)).await()
             eventRef.update("participantsCount", FieldValue.increment(1)).await()
             refreshEvents()
@@ -73,7 +81,7 @@ class EventsRepository @Inject constructor(
         }
     }
 
-    suspend fun createEvent(event: EventEntity) {
+    suspend fun createEvent(event: Event) {
         withContext(Dispatchers.IO) {
             val data = mapOf(
                 "id" to event.id,
@@ -118,3 +126,16 @@ class EventsRepository @Inject constructor(
         private const val EVENTS_COLLECTION = "events"
     }
 }
+
+/** Maps a Room entity to the domain model. */
+private fun EventEntity.toDomain() = Event(
+    id = id,
+    title = title,
+    location = location,
+    time = time,
+    description = description,
+    imageUrl = imageUrl,
+    participantsCount = participantsCount,
+    attendeeIds = attendeeIds,
+    creatorId = creatorId
+)

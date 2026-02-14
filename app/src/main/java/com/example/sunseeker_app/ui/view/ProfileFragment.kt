@@ -13,9 +13,9 @@ import com.bumptech.glide.Glide
 import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.DialogEditProfileBinding
 import com.example.sunseeker_app.databinding.FragmentProfileBinding
-import com.example.sunseeker_app.ui.viewmodel.ProfileState
 import com.example.sunseeker_app.ui.viewmodel.ProfileUi
 import com.example.sunseeker_app.ui.viewmodel.ProfileViewModel
+import com.example.sunseeker_app.ui.viewmodel.UiState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,7 +42,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentProfileBinding.bind(view)
 
-        val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        // Get currentUserId from ViewModel — never access Firebase directly
+        val currentUserId = viewModel.currentUserId
 
         adapter = EventsAdapter(
             onJoinClick = { event ->
@@ -80,12 +81,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         viewModel.profileState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is ProfileState.Loading -> binding.buttonEditProfile.isEnabled = false
-                is ProfileState.Success -> {
+                is UiState.Loading -> binding.buttonEditProfile.isEnabled = false
+                is UiState.Success -> {
                     binding.buttonEditProfile.isEnabled = true
-                    Snackbar.make(binding.root, "Profile updated", Snackbar.LENGTH_SHORT).show()
+                    Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
                 }
-                is ProfileState.Error -> {
+                is UiState.Error -> {
                     binding.buttonEditProfile.isEnabled = true
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                 }
