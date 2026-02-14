@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 
 @Dao
 interface EventDao {
@@ -19,4 +20,10 @@ interface EventDao {
 
     @Query("DELETE FROM events")
     suspend fun deleteAll()
+
+    @Transaction
+    suspend fun replaceAll(events: List<EventEntity>) {
+        deleteAll()
+        insertAll(events)
+    }
 }

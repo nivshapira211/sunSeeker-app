@@ -48,10 +48,7 @@ class EventsRepository @Inject constructor(
                 )
             }
 
-            eventDao.deleteAll()
-            if (events.isNotEmpty()) {
-                eventDao.insertAll(events)
-            }
+            eventDao.replaceAll(events)
         }
     }
 
