@@ -1,4 +1,61 @@
 <resources>
     <string name="app_name">sunSeeker-app</string>
     <string name="google_maps_key"></string>
+
+    <!-- Feed -->
+    <string name="feed_title">SunSeeker</string>
+    <string name="feed_create_event">Create event</string>
+
+    <!-- Event Card -->
+    <string name="action_join">Join</string>
+    <string name="action_leave">Leave</string>
+    <string name="event_image_description">Event image</string>
+    <string name="event_scrim_description">Image overlay</string>
+
+    <!-- Event Details -->
+    <string name="event_title_default">Event Title</string>
+    <string name="event_location_default">Location Name</string>
+    <string name="event_time_default">Date &amp; Time</string>
+    <string name="event_about_heading">About</string>
+    <string name="event_description_default">Event description…</string>
+    <string name="event_attendees_heading">Attendees</string>
+    <string name="event_attendees_none">No attendees yet</string>
+    <string name="action_join_event">Join Event</string>
+    <string name="action_leave_event">Leave Event</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Create Event -->
+    <string name="create_event_title">Create Event</string>
+    <string name="hint_event_title">Event Title</string>
+    <string name="hint_description">Description</string>
+    <string name="label_location">Location</string>
+    <string name="label_no_location">No location selected</string>
+    <string name="action_pick_location">Pick Location</string>
+    <string name="label_date_time">Date &amp; Time</string>
+    <string name="label_no_time">No time selected</string>
+    <string name="action_pick_time">Pick Date &amp; Time</string>
+    <string name="label_add_photo">+ Add Photo</string>
+    <string name="action_publish">Publish Event</string>
+    <string name="label_sunrise">Sunrise: --:--</string>
+    <string name="label_sunset">Sunset: --:--</string>
+    <string name="action_refresh_sun">Refresh Sun Times</string>
+
+    <!-- Auth -->
+    <string name="login_title">Welcome to SunSeeker</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="action_login">Login</string>
+    <string name="action_create_account">Create account</string>
+    <string name="register_title">Create your account</string>
+    <string name="action_register">Register</string>
+    <string name="action_back_to_login">Back to login</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Profile</string>
+    <string name="profile_name_default">User Name</string>
+    <string name="profile_events_heading">My Events</string>
+    <string name="profile_events_count_format">(%1$d)</string>
+    <string name="action_edit_profile">Edit Profile</string>
+    <string name="action_logout">Logout</string>
 </resources>
