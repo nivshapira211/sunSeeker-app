@@ -57,6 +57,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         viewModel.myEvents.observe(viewLifecycleOwner) { events ->
             adapter.submitList(events)
+            binding.textEventsCount.text = "(${events.size})"
         }
 
         viewModel.refreshProfile()
