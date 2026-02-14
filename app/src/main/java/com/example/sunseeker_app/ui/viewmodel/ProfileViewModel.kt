@@ -31,6 +31,9 @@ class ProfileViewModel @Inject constructor(
     private val _profileState = MutableLiveData<ProfileState>()
     val profileState: LiveData<ProfileState> = _profileState
 
+    private val _joinState = MutableLiveData<ProfileJoinState?>()
+    val joinState: LiveData<ProfileJoinState?> = _joinState
+
     val myEvents: LiveData<List<EventEntity>> = eventsRepository.getEvents().map { events ->
         val uid = firebaseAuth.currentUser?.uid
         if (uid == null) emptyList() else events.filter { it.creatorId == uid }
@@ -49,6 +52,32 @@ class ProfileViewModel @Inject constructor(
 
     fun logout() {
         authRepository.logout()
+    }
+
+    fun joinEvent(eventId: String) {
+        val userId = firebaseAuth.currentUser?.uid ?: return
+        _joinState.value = ProfileJoinState.Loading
+        viewModelScope.launch {
+            try {
+                eventsRepository.joinEvent(eventId, userId)
+                _joinState.value = ProfileJoinState.Success("Joined event")
+            } catch (e: Exception) {
+                _joinState.value = ProfileJoinState.Error(e.message ?: "Join failed")
+            }
+        }
+    }
+
+    fun leaveEvent(eventId: String) {
+        val userId = firebaseAuth.currentUser?.uid ?: return
+        _joinState.value = ProfileJoinState.Loading
+        viewModelScope.launch {
+            try {
+                eventsRepository.leaveEvent(eventId, userId)
+                _joinState.value = ProfileJoinState.Success("Left event")
+            } catch (e: Exception) {
+                _joinState.value = ProfileJoinState.Error(e.message ?: "Leave failed")
+            }
+        }
     }
 
     fun updateProfile(displayName: String, imageUri: Uri?) {
@@ -96,3 +125,9 @@ data class ProfileUi(
     val name: String,
     val photoUrl: String?
 )
+
+sealed class ProfileJoinState {
+    data object Loading : ProfileJoinState()
+    data class Success(val message: String) : ProfileJoinState()
+    data class Error(val message: String) : ProfileJoinState()
+}

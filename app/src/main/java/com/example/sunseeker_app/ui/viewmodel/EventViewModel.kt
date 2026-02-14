@@ -46,6 +46,24 @@ class EventViewModel @Inject constructor(
         }
     }
 
+    fun leaveEvent(eventId: String) {
+        val userId = firebaseAuth.currentUser?.uid
+        if (userId == null) {
+             _joinState.value = ActionState.Error("You must be logged in")
+            return
+        }
+
+        _joinState.value = ActionState.Loading
+        viewModelScope.launch {
+            try {
+                eventsRepository.leaveEvent(eventId, userId)
+                _joinState.value = ActionState.Success("Left event")
+            } catch (e: Exception) {
+                _joinState.value = ActionState.Error(e.message ?: "Leave failed")
+            }
+        }
+    }
+
     fun deleteEvent(eventId: String) {
         _joinState.value = ActionState.Loading
         viewModelScope.launch {

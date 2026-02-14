@@ -27,19 +27,60 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
         _binding = FragmentEventDetailsBinding.bind(view)
 
         val eventId = args.eventId
+        
+        // Setup toolbar
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.setSupportActionBar(binding.toolbar)
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (requireActivity() as? androidx.appcompat.app.AppCompatActivity)?.supportActionBar?.title = ""
+        binding.toolbar.setNavigationOnClickListener { findNavController().navigateUp() }
+
         viewModel.getEvent(eventId).observe(viewLifecycleOwner) { event ->
             if (event == null) return@observe
-            binding.textDescription.text = event.description.ifBlank { event.location }
+            
+            // Text info
+            binding.textTitle.text = event.title
+            binding.textLocation.text = event.location
+            binding.textTime.text = event.time
+            binding.textDescription.text = event.description.ifBlank { "No description provided." }
             binding.textAttendees.text =
                 if (event.attendeeIds.isEmpty()) "No attendees yet"
-                else event.attendeeIds.joinToString(separator = "\n")
-            val isOwner = viewModel.isOwner(event)
-            binding.buttonEditEvent.visibility = if (isOwner) View.VISIBLE else View.GONE
-            binding.buttonDeleteEvent.visibility = if (isOwner) View.VISIBLE else View.GONE
-        }
+                else "${event.attendeeIds.size} people attending" // Simplify for now
 
-        binding.buttonJoinEvent.setOnClickListener {
-            viewModel.joinEvent(eventId)
+            // Image
+            if (event.imageUrl.isNotBlank()) {
+                 com.bumptech.glide.Glide.with(this)
+                    .load(event.imageUrl)
+                    .centerCrop()
+                    .placeholder(com.example.sunseeker_app.R.drawable.event_placeholder)
+                    .into(binding.imageEventDetail)
+            } else {
+                 binding.imageEventDetail.setImageResource(com.example.sunseeker_app.R.drawable.event_placeholder)
+            }
+
+            // Owner actions
+            val isOwner = viewModel.isOwner(event)
+            binding.ownerActionsContainer.visibility = if (isOwner) View.VISIBLE else View.GONE
+            
+            // Join/Leave button logic
+            val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+            val isJoined = event.attendeeIds.contains(userId)
+            
+            val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
+            val errorColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
+
+            binding.buttonJoinEvent.text = if (isJoined) "Leave Event" else "Join Event"
+            binding.buttonJoinEvent.setBackgroundColor(
+                if (isJoined) errorColor 
+                else primaryColor
+            )
+            
+            binding.buttonJoinEvent.setOnClickListener {
+                if (isJoined) {
+                    viewModel.leaveEvent(eventId)
+                } else {
+                    viewModel.joinEvent(eventId)
+                }
+            }
         }
 
         binding.buttonEditEvent.setOnClickListener {

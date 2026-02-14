@@ -11,7 +11,7 @@ import com.example.sunseeker_app.databinding.ItemEventBinding
 class EventsAdapter(
     private val onJoinClick: (EventEntity) -> Unit,
     private val onItemClick: (EventEntity) -> Unit,
-    private val joinLabel: String = "Join"
+    private val currentUserId: String? = null
 ) : ListAdapter<EventEntity, EventsAdapter.EventViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
@@ -24,7 +24,7 @@ class EventsAdapter(
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
-        holder.bind(getItem(position), onJoinClick, onItemClick, joinLabel)
+        holder.bind(getItem(position), onJoinClick, onItemClick, currentUserId)
     }
 
     class EventViewHolder(
@@ -34,13 +34,36 @@ class EventsAdapter(
             item: EventEntity,
             onJoinClick: (EventEntity) -> Unit,
             onItemClick: (EventEntity) -> Unit,
-            joinLabel: String
+            currentUserId: String?
         ) {
             binding.textTitle.text = item.title
             binding.textTime.text = item.time
-            binding.buttonJoin.text = joinLabel
+
+            // Toggle Join/Leave based on attendance
+            val isJoined = currentUserId != null && item.attendeeIds.contains(currentUserId)
+            binding.buttonJoin.text = if (isJoined) "Leave" else "Join"
+
+            val primaryColor = com.google.android.material.color.MaterialColors.getColor(
+                binding.root, androidx.appcompat.R.attr.colorPrimary
+            )
+            val errorColor = com.google.android.material.color.MaterialColors.getColor(
+                binding.root, androidx.appcompat.R.attr.colorError
+            )
+            binding.buttonJoin.setBackgroundColor(if (isJoined) errorColor else primaryColor)
+
             binding.buttonJoin.setOnClickListener { onJoinClick(item) }
             binding.root.setOnClickListener { onItemClick(item) }
+
+            // Load event image
+            if (item.imageUrl.isNotBlank()) {
+                com.bumptech.glide.Glide.with(binding.root.context)
+                    .load(item.imageUrl)
+                    .centerCrop()
+                    .placeholder(com.example.sunseeker_app.R.drawable.event_placeholder)
+                    .into(binding.imageEvent)
+            } else {
+                binding.imageEvent.setImageResource(com.example.sunseeker_app.R.drawable.event_placeholder)
+            }
         }
     }
 
