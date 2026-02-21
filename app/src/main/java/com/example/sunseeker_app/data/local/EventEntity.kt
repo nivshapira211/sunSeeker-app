@@ -14,6 +14,7 @@ data class EventEntity(
     val participantsCount: Int,
     val attendeeIds: List<String>,
     val attendeeNames: Map<String, String> = emptyMap(),
-    val sunType: String = ""
+    val sunType: String = "",
+    val creatorId: String
 )
 

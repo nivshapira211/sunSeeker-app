@@ -51,14 +51,11 @@ class EventsRepository @Inject constructor(
                 val attendeeIds = (doc.get("attendees") as? List<*>)
                     ?.mapNotNull { it as? String }
                     ?: emptyList()
-<<<<<<< HEAD
                 val attendeeNames = (doc.get("attendeeNames") as? Map<*, *>)
                     ?.mapNotNull { (k, v) -> if (k is String && v is String) k to v else null }
                     ?.toMap()
                     ?: emptyMap()
-=======
                 val sunType = doc.getString("sunType") ?: ""
->>>>>>> c60bdf0 (add event type)
 
                 EventEntity(
                     id = id,
@@ -69,16 +66,11 @@ class EventsRepository @Inject constructor(
                     imageUrl = imageUrl,
                     participantsCount = participantsCount,
                     attendeeIds = attendeeIds,
-<<<<<<< HEAD
                     attendeeNames = attendeeNames,
-                    creatorId = creatorId
-=======
                     creatorId = creatorId,
                     sunType = sunType
->>>>>>> c60bdf0 (add event type)
                 )
             }
-
             eventDao.replaceAll(events)
         }
     }
@@ -161,11 +153,7 @@ private fun EventEntity.toDomain() = Event(
     imageUrl = imageUrl,
     participantsCount = participantsCount,
     attendeeIds = attendeeIds,
-<<<<<<< HEAD
     attendeeNames = attendeeNames,
-    creatorId = creatorId
-=======
     creatorId = creatorId,
     sunType = sunType
->>>>>>> c60bdf0 (add event type)
 )

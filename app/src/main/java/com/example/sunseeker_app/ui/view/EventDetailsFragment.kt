@@ -51,7 +51,6 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
                 if (event.attendeeIds.isEmpty()) getString(R.string.event_attendees_none)
                 else "${event.attendeeIds.size} people attending"
 
-<<<<<<< HEAD
             // Show attendee names as chips
             binding.chipGroupAttendees.removeAllViews()
             if (event.attendeeNames.isNotEmpty()) {
@@ -69,13 +68,13 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
                 binding.chipGroupAttendees.visibility = View.GONE
             } else {
                 binding.chipGroupAttendees.visibility = View.GONE
-=======
+            }
+
             if (event.sunType.isNotBlank()) {
                 binding.textSunType.visibility = View.VISIBLE
                 binding.textSunType.text = if (event.sunType == "sunrise") "\u2600\uFE0F Sunrise" else "\uD83C\uDF05 Sunset"
             } else {
                 binding.textSunType.visibility = View.GONE
->>>>>>> c60bdf0 (add event type)
             }
 
             // Image
