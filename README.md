@@ -30,7 +30,7 @@ The primary goal of SunSeeker is to foster a community around the appreciation o
 
 SunSeeker is designed as a mobile-first experience, optimized for use in the field while chasing the perfect horizon.
 
-## Firebase Setup (Required)
+## Firebase Setup
 
 Authentication uses Firebase. To run the app locally, add your Firebase config file and enable Email/Password auth:
 
@@ -39,7 +39,7 @@ Authentication uses Firebase. To run the app locally, add your Firebase config f
 3. Place it at: `app/google-services.json`.
 4. In Firebase Console, enable **Authentication -> Sign-in method -> Email/Password**.
 
-## Firebase Storage (Required for Event Images)
+## Firebase Storage
 
 Event images are uploaded to Firebase Storage. To enable:
 
@@ -47,3 +47,26 @@ Event images are uploaded to Firebase Storage. To enable:
 2. For development, allow authenticated users to read/write to `events/**` and `profiles/**`.
 
 If you need me to wire additional Firebase settings (e.g., Firestore rules or SHA-1/256), share them and I’ll update the project config and docs.
+
+## Code Structure
+
+The project follows a Clean Architecture approach with an MVVM (Model-View-ViewModel) pattern in the UI layer.
+
+### Core Packages
+
+*   **`data/`**: Handles data operations.
+    *   `local/`: Room database implementation, entities, and DAOs for offline persistence.
+    *   `remote/`: External data sources, including Firebase (Auth, Storage) and Retrofit API services.
+    *   `repository/`: The "single source of truth" for data, orchestrating between local and remote sources.
+    *   `model/`: Domain data models used throughout the application.
+*   **`ui/`**: User interface components.
+    *   `view/`: Fragments for different screens (Feed, Profile, Login, etc.) and RecyclerView Adapters.
+    *   `viewmodel/`: Architecture Components ViewModels that manage UI-related data and communicate with repositories.
+*   **`di/`**: Dependency Injection modules (using Hilt/Dagger) for managing component lifecycles and providing dependencies.
+*   **`utils/`**: Helper classes and utility functions.
+
+### Resources
+
+*   **`res/layout/`**: XML layout definitions for fragments and list items.
+*   **`res/navigation/`**: Jetpack Navigation graph defining the app's flow.
+*   **`res/values/`**: Styles, colors, and string resources.
