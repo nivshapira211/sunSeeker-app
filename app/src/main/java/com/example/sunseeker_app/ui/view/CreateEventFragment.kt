@@ -44,6 +44,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     private var currentLng: Double? = null
     private var selectedLocationName: String? = null
     private var selectedDateTime: java.util.Calendar? = null
+    private var selectedSunType: String? = null
 
     private val startAutocomplete = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -108,6 +109,15 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                         .into(binding.imagePreview)
                     binding.textAddPhotoHint.visibility = View.GONE
                 }
+
+                if (event.sunType.isNotBlank()) {
+                    selectedSunType = event.sunType
+                    binding.chipGroupSunTimes.visibility = View.VISIBLE
+                    when (event.sunType) {
+                        "sunrise" -> binding.chipSunrise.isChecked = true
+                        "sunset" -> binding.chipSunset.isChecked = true
+                    }
+                }
             }
         }
 
@@ -138,6 +148,13 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
             }
         }
 
+        binding.chipSunrise.setOnClickListener {
+            selectedSunType = if (binding.chipSunrise.isChecked) "sunrise" else null
+        }
+        binding.chipSunset.setOnClickListener {
+            selectedSunType = if (binding.chipSunset.isChecked) "sunset" else null
+        }
+
         binding.buttonPickTime.setOnClickListener {
             showDateTimePicker()
         }
@@ -163,20 +180,22 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                  return@setOnClickListener
             }
 
-            // If editing and no new time selected, keep existing (logic handled in ViewModel or here)
-            // For now, let's assume if text is not "No time selected", we have a time.
-            
+            if (selectedSunType == null) {
+                Snackbar.make(binding.root, "Please select Sunrise or Sunset", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val finalTime = if (selectedDateTime != null) {
                 val format = java.text.SimpleDateFormat("MMM dd, yyyy h:mm a", java.util.Locale.getDefault())
                 format.format(selectedDateTime!!.time)
             } else {
-                // If editing, we might want to keep original time if not changed. 
-                // But for simplicity, we require picking time if it was TBD or just pass the string if it's already set.
                if (eventId != null) binding.textSelectedTime.text.toString() else "TBD"
             }
 
+            val sunType = selectedSunType!!
+
             if (eventId == null) {
-                viewModel.createEvent(title, location, finalTime, description, selectedImageUri)
+                viewModel.createEvent(title, location, finalTime, description, selectedImageUri, sunType)
             } else {
                 viewModel.updateEvent(
                     eventId,
@@ -185,7 +204,8 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                     finalTime,
                     description,
                     selectedImageUri,
-                    existingImageUrl
+                    existingImageUrl,
+                    sunType
                 )
             }
         }

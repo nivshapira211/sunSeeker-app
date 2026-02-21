@@ -104,6 +104,19 @@
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/text_sun_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:paddingHorizontal="14dp"
+                android:paddingVertical="6dp"
+                android:background="@drawable/bg_sun_type_badge"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"

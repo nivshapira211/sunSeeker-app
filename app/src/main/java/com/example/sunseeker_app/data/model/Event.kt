@@ -9,7 +9,12 @@ data class Event(
     val imageUrl: String,
     val participantsCount: Int,
     val attendeeIds: List<String>,
+<<<<<<< HEAD
     val attendeeNames: Map<String, String> = emptyMap(),
     val creatorId: String
+=======
+    val creatorId: String,
+    val sunType: String = ""
+>>>>>>> c60bdf0 (add event type)
 )
 

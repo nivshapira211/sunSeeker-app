@@ -105,6 +105,13 @@ class FeedAdapter(
 
             binding.root.setOnClickListener { onItemClick(item) }
 
+            if (item.sunType.isNotBlank()) {
+                binding.textSunType.visibility = View.VISIBLE
+                binding.textSunType.text = if (item.sunType == "sunrise") "\u2600\uFE0F Sunrise" else "\uD83C\uDF05 Sunset"
+            } else {
+                binding.textSunType.visibility = View.GONE
+            }
+
             if (item.imageUrl.isNotBlank()) {
                 Glide.with(binding.root.context)
                     .load(item.imageUrl)

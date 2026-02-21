@@ -40,7 +40,8 @@ class CreateEventViewModel @Inject constructor(
         location: String,
         time: String,
         description: String,
-        imageUri: Uri?
+        imageUri: Uri?,
+        sunType: String
     ) {
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
@@ -68,7 +69,8 @@ class CreateEventViewModel @Inject constructor(
                     imageUrl = imageUrl,
                     participantsCount = 0,
                     attendeeIds = emptyList(),
-                    creatorId = userId
+                    creatorId = userId,
+                    sunType = sunType
                 )
                 withContext(Dispatchers.IO) { eventsRepository.createEvent(event) }
                 _state.value = CreateEventState.Success
@@ -85,7 +87,8 @@ class CreateEventViewModel @Inject constructor(
         time: String,
         description: String,
         imageUri: Uri?,
-        existingImageUrl: String
+        existingImageUrl: String,
+        sunType: String
     ) {
         val userId = authRepository.getCurrentUserId()
         if (userId == null) {
@@ -113,7 +116,8 @@ class CreateEventViewModel @Inject constructor(
                     "location" to location.trim(),
                     "time" to time,
                     "description" to description.trim(),
-                    "imageUrl" to imageUrl
+                    "imageUrl" to imageUrl,
+                    "sunType" to sunType
                 )
                 withContext(Dispatchers.IO) { eventsRepository.updateEvent(eventId, updates) }
                 _state.value = CreateEventState.Success

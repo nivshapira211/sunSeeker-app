@@ -74,6 +74,13 @@ class EventsAdapter(
 
             binding.root.setOnClickListener { onItemClick(item) }
 
+            if (item.sunType.isNotBlank()) {
+                binding.textSunType.visibility = View.VISIBLE
+                binding.textSunType.text = if (item.sunType == "sunrise") "\u2600\uFE0F Sunrise" else "\uD83C\uDF05 Sunset"
+            } else {
+                binding.textSunType.visibility = View.GONE
+            }
+
             // Load event image
             if (item.imageUrl.isNotBlank()) {
                 com.bumptech.glide.Glide.with(binding.root.context)
