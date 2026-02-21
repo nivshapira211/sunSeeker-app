@@ -50,6 +50,11 @@
     <string name="register_title">Create your account</string>
     <string name="action_register">Register</string>
     <string name="action_back_to_login">Back to login</string>
+    <string name="hint_display_name">Display Name</string>
+    <string name="label_forgot_password">Forgot password?</string>
+    <string name="label_tap_add_photo">Tap to add photo</string>
+    <string name="app_brand_name">SunSeeker</string>
+    <string name="label_already_have_account">Already have an account?</string>
 
     <!-- Profile -->
     <string name="profile_title">Profile</string>
