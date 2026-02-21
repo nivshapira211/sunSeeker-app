@@ -83,10 +83,12 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
                 is UiState.Success -> {
                     binding.progressFeed.visibility = View.GONE
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
+                    viewModel.clearJoinState()
                 }
                 is UiState.Error -> {
                     binding.progressFeed.visibility = View.GONE
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                    viewModel.clearJoinState()
                 }
                 null -> Unit
             }

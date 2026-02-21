@@ -21,8 +21,8 @@ class ProfileViewModel @Inject constructor(
 
     val currentUserId: String? get() = authRepository.getCurrentUserId()
 
-    private val _profileState = MutableLiveData<UiState>()
-    val profileState: LiveData<UiState> = _profileState
+    private val _profileState = MutableLiveData<UiState?>()
+    val profileState: LiveData<UiState?> = _profileState
 
     private val _joinState = MutableLiveData<UiState?>()
     val joinState: LiveData<UiState?> = _joinState
@@ -89,6 +89,14 @@ class ProfileViewModel @Inject constructor(
                 _profileState.value = UiState.Error(e.message ?: "Update failed")
             }
         }
+    }
+
+    fun clearJoinState() {
+        _joinState.value = null
+    }
+
+    fun clearProfileState() {
+        _profileState.value = null
     }
 }
 

@@ -85,11 +85,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 is UiState.Success -> {
                     binding.buttonEditProfile.isEnabled = true
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
+                    viewModel.clearProfileState()
                 }
                 is UiState.Error -> {
                     binding.buttonEditProfile.isEnabled = true
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                    viewModel.clearProfileState()
                 }
+                null -> Unit
             }
         }
     }

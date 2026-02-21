@@ -141,11 +141,14 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
                 is UiState.Success -> {
                     setLoading(false)
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_SHORT).show()
+                    viewModel.clearJoinState()
                 }
                 is UiState.Error -> {
                     setLoading(false)
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                    viewModel.clearJoinState()
                 }
+                null -> Unit
             }
         }
     }

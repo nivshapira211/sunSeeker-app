@@ -17,8 +17,8 @@ class EventViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _joinState = MutableLiveData<UiState>()
-    val joinState: LiveData<UiState> = _joinState
+    private val _joinState = MutableLiveData<UiState?>()
+    val joinState: LiveData<UiState?> = _joinState
 
     val currentUserId: String? get() = authRepository.getCurrentUserId()
 
@@ -77,5 +77,9 @@ class EventViewModel @Inject constructor(
                 _joinState.value = UiState.Error(e.message ?: "Delete failed")
             }
         }
+    }
+
+    fun clearJoinState() {
+        _joinState.value = null
     }
 }

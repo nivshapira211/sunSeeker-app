@@ -157,6 +157,10 @@ class FeedViewModel @Inject constructor(
             }
         }
     }
+
+    fun clearJoinState() {
+        _joinState.value = null
+    }
 }
 
 sealed class FeedState {
