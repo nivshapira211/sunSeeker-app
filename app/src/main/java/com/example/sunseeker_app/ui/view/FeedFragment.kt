@@ -45,6 +45,10 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
         )
         binding.recyclerEvents.adapter = adapter
 
+        binding.swipeRefresh.setOnRefreshListener {
+            viewModel.refresh()
+        }
+
         binding.fabCreateEvent.setOnClickListener {
             val action = FeedFragmentDirections.actionFeedFragmentToCreateEventFragment(null)
             findNavController().navigate(action)
@@ -56,10 +60,18 @@ class FeedFragment : Fragment(R.layout.fragment_feed) {
 
         viewModel.state.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is FeedState.Loading -> binding.progressFeed.visibility = View.VISIBLE
-                is FeedState.Idle -> binding.progressFeed.visibility = View.GONE
+                is FeedState.Loading -> {
+                    if (!binding.swipeRefresh.isRefreshing) {
+                        binding.progressFeed.visibility = View.VISIBLE
+                    }
+                }
+                is FeedState.Idle -> {
+                    binding.progressFeed.visibility = View.GONE
+                    binding.swipeRefresh.isRefreshing = false
+                }
                 is FeedState.Error -> {
                     binding.progressFeed.visibility = View.GONE
+                    binding.swipeRefresh.isRefreshing = false
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
                 }
             }
