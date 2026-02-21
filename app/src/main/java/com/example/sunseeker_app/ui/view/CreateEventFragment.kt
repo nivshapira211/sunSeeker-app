@@ -46,46 +46,29 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     private var selectedDateTime: java.util.Calendar? = null
     private var selectedSunType: String? = null
 
-    private val startAutocomplete = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
-            val intent = result.data
-            if (intent != null) {
-                val place = com.google.android.libraries.places.widget.Autocomplete.getPlaceFromIntent(intent)
-                val latLng = place.latLng
-                if (latLng != null) {
-                    currentLat = latLng.latitude
-                    currentLng = latLng.longitude
-                    
-                    val address = place.address ?: place.name ?: "Unknown Location"
-                    selectedLocationName = place.name ?: place.address
-                    
-                    binding.textSelectedLocation.text = address
-                    binding.textSelectedLocation.setTextColor(resources.getColor(android.R.color.black, null))
-                    
-                    viewModel.fetchSunTimes(latLng.latitude, latLng.longitude)
-                }
-            }
-        } else if (result.resultCode == com.google.android.libraries.places.widget.AutocompleteActivity.RESULT_ERROR) {
-            val intent = result.data
-            if (intent != null) {
-                val status = com.google.android.libraries.places.widget.Autocomplete.getStatusFromIntent(intent)
-                Snackbar.make(binding.root, "Error: ${status.statusMessage}", Snackbar.LENGTH_LONG).show()
-            }
-        }
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCreateEventBinding.bind(view)
 
-        // Initialize Places
-        if (!com.google.android.libraries.places.api.Places.isInitialized()) {
-             // Ensure you have google_maps_key in strings.xml
-             try {
-                com.google.android.libraries.places.api.Places.initialize(requireContext(), getString(R.string.google_maps_key))
-             } catch (e: Exception) {
-                Snackbar.make(binding.root, "Places initialization failed. Check API Key.", Snackbar.LENGTH_LONG).show()
-             }
+        // Listen for result from MapPickerFragment
+        val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
+        savedStateHandle?.getLiveData<Double>("picked_lat")?.observe(viewLifecycleOwner) { lat ->
+            val lng = savedStateHandle.get<Double>("picked_lng")
+            val address = savedStateHandle.get<String>("picked_address")
+            if (lng != null) {
+                currentLat = lat
+                currentLng = lng
+                selectedLocationName = address ?: "Selected Location"
+                binding.textSelectedLocation.text = selectedLocationName
+                binding.textSelectedLocation.setTextColor(resources.getColor(android.R.color.black, null))
+                viewModel.fetchSunTimes(lat, lng)
+                // Clear to avoid re-triggering
+                savedStateHandle.remove<Double>("picked_lat")
+                savedStateHandle.remove<Double>("picked_lng")
+                savedStateHandle.remove<String>("picked_address")
+            }
         }
 
         val eventId = args.eventId
@@ -126,16 +109,9 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
         }
 
         binding.buttonPickLocation.setOnClickListener {
-            val fields = listOf(
-                com.google.android.libraries.places.api.model.Place.Field.ID,
-                com.google.android.libraries.places.api.model.Place.Field.NAME,
-                com.google.android.libraries.places.api.model.Place.Field.ADDRESS,
-                com.google.android.libraries.places.api.model.Place.Field.LAT_LNG
+            findNavController().navigate(
+                CreateEventFragmentDirections.actionCreateEventFragmentToMapPickerFragment()
             )
-            val intent = com.google.android.libraries.places.widget.Autocomplete.IntentBuilder(
-                com.google.android.libraries.places.widget.model.AutocompleteActivityMode.FULLSCREEN, fields
-            ).build(requireContext())
-            startAutocomplete.launch(intent)
         }
 
         binding.buttonFetchSunTimes.setOnClickListener {

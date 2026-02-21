@@ -57,7 +57,15 @@
             android:name="eventId"
             app:argType="string"
             app:nullable="true" />
+        <action
+            android:id="@+id/action_createEventFragment_to_mapPickerFragment"
+            app:destination="@id/mapPickerFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/mapPickerFragment"
+        android:name="com.example.sunseeker_app.ui.view.MapPickerFragment"
+        android:label="Pick Location" />
 
     <fragment
         android:id="@+id/profileFragment"
