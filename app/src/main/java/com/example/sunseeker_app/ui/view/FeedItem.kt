@@ -8,7 +8,7 @@ import com.example.sunseeker_app.data.model.Event
  */
 sealed class FeedItem {
     /** A regular event card. */
-    data class EventItem(val event: Event) : FeedItem() {
+    data class EventItem(val event: Event, val isPast: Boolean = false) : FeedItem() {
         val id: String get() = event.id
     }
 

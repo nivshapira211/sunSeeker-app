@@ -13,6 +13,9 @@ import com.example.sunseeker_app.ui.viewmodel.EventViewModel
 import com.example.sunseeker_app.ui.viewmodel.UiState
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
@@ -62,25 +65,35 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             val isOwner = viewModel.isOwner(event)
             binding.ownerActionsContainer.visibility = if (isOwner) View.VISIBLE else View.GONE
             
-            // Join/Leave button logic — userId from ViewModel, not Firebase directly
-            val userId = viewModel.currentUserId
-            val isJoined = event.attendeeIds.contains(userId)
-            
-            val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
-            val errorColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
+            // Hide join/leave button for past events
+            val timeFormat = SimpleDateFormat("MMM dd, yyyy h:mm a", Locale.getDefault())
+            val eventTime = try { timeFormat.parse(event.time) } catch (_: Exception) { null }
+            val isPast = eventTime != null && eventTime.before(Date())
 
-            binding.buttonJoinEvent.text = getString(
-                if (isJoined) R.string.action_leave_event else R.string.action_join_event
-            )
-            binding.buttonJoinEvent.backgroundTintList = ColorStateList.valueOf(
-                if (isJoined) errorColor else primaryColor
-            )
-            
-            binding.buttonJoinEvent.setOnClickListener {
-                if (isJoined) {
-                    viewModel.leaveEvent(eventId)
-                } else {
-                    viewModel.joinEvent(eventId)
+            if (isPast) {
+                binding.buttonJoinEvent.visibility = View.GONE
+            } else {
+                binding.buttonJoinEvent.visibility = View.VISIBLE
+
+                val userId = viewModel.currentUserId
+                val isJoined = event.attendeeIds.contains(userId)
+
+                val primaryColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorPrimary)
+                val errorColor = com.google.android.material.color.MaterialColors.getColor(binding.root, androidx.appcompat.R.attr.colorError)
+
+                binding.buttonJoinEvent.text = getString(
+                    if (isJoined) R.string.action_leave_event else R.string.action_join_event
+                )
+                binding.buttonJoinEvent.backgroundTintList = ColorStateList.valueOf(
+                    if (isJoined) errorColor else primaryColor
+                )
+
+                binding.buttonJoinEvent.setOnClickListener {
+                    if (isJoined) {
+                        viewModel.leaveEvent(eventId)
+                    } else {
+                        viewModel.joinEvent(eventId)
+                    }
                 }
             }
         }

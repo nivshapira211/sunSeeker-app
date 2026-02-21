@@ -102,7 +102,7 @@ class FeedViewModel @Inject constructor(
                 isExpanded = pastExpanded
             ))
             if (pastExpanded) {
-                items.addAll(past.map { FeedItem.EventItem(it) })
+                items.addAll(past.map { FeedItem.EventItem(it, isPast = true) })
             }
         }
 

@@ -2,6 +2,7 @@ package com.example.sunseeker_app.ui.view
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -9,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sunseeker_app.R
 import com.example.sunseeker_app.data.model.Event
 import com.example.sunseeker_app.databinding.ItemEventBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class EventsAdapter(
     private val onJoinClick: (Event) -> Unit,
@@ -41,23 +45,33 @@ class EventsAdapter(
             binding.textTitle.text = item.title
             binding.textTime.text = item.time
 
-            // Toggle Join/Leave based on attendance
-            val isJoined = currentUserId != null && item.attendeeIds.contains(currentUserId)
-            binding.buttonJoin.text = binding.root.context.getString(
-                if (isJoined) R.string.action_leave else R.string.action_join
-            )
+            val timeFormat = SimpleDateFormat("MMM dd, yyyy h:mm a", Locale.getDefault())
+            val eventTime = try { timeFormat.parse(item.time) } catch (_: Exception) { null }
+            val isPast = eventTime != null && eventTime.before(Date())
 
-            val primaryColor = com.google.android.material.color.MaterialColors.getColor(
-                binding.root, androidx.appcompat.R.attr.colorPrimary
-            )
-            val errorColor = com.google.android.material.color.MaterialColors.getColor(
-                binding.root, androidx.appcompat.R.attr.colorError
-            )
-            binding.buttonJoin.backgroundTintList = ColorStateList.valueOf(
-                if (isJoined) errorColor else primaryColor
-            )
+            if (isPast) {
+                binding.buttonJoin.visibility = View.GONE
+            } else {
+                binding.buttonJoin.visibility = View.VISIBLE
 
-            binding.buttonJoin.setOnClickListener { onJoinClick(item) }
+                val isJoined = currentUserId != null && item.attendeeIds.contains(currentUserId)
+                binding.buttonJoin.text = binding.root.context.getString(
+                    if (isJoined) R.string.action_leave else R.string.action_join
+                )
+
+                val primaryColor = com.google.android.material.color.MaterialColors.getColor(
+                    binding.root, androidx.appcompat.R.attr.colorPrimary
+                )
+                val errorColor = com.google.android.material.color.MaterialColors.getColor(
+                    binding.root, androidx.appcompat.R.attr.colorError
+                )
+                binding.buttonJoin.backgroundTintList = ColorStateList.valueOf(
+                    if (isJoined) errorColor else primaryColor
+                )
+
+                binding.buttonJoin.setOnClickListener { onJoinClick(item) }
+            }
+
             binding.root.setOnClickListener { onItemClick(item) }
 
             // Load event image
