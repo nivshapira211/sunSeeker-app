@@ -13,5 +13,7 @@ data class EventEntity(
     val imageUrl: String,
     val participantsCount: Int,
     val attendeeIds: List<String>,
+    val attendeeNames: Map<String, String> = emptyMap(),
     val creatorId: String
 )
+

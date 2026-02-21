@@ -11,6 +11,7 @@ import com.example.sunseeker_app.R
 import com.example.sunseeker_app.databinding.FragmentEventDetailsBinding
 import com.example.sunseeker_app.ui.viewmodel.EventViewModel
 import com.example.sunseeker_app.ui.viewmodel.UiState
+import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -46,9 +47,28 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
             binding.textLocation.text = event.location
             binding.textTime.text = event.time
             binding.textDescription.text = event.description.ifBlank { "No description provided." }
-            binding.textAttendees.text =
+            binding.textAttendeesCount.text =
                 if (event.attendeeIds.isEmpty()) getString(R.string.event_attendees_none)
                 else "${event.attendeeIds.size} people attending"
+
+            // Show attendee names as chips
+            binding.chipGroupAttendees.removeAllViews()
+            if (event.attendeeNames.isNotEmpty()) {
+                event.attendeeNames.values.forEach { name ->
+                    val chip = Chip(requireContext()).apply {
+                        text = name
+                        isClickable = false
+                        isCheckable = false
+                    }
+                    binding.chipGroupAttendees.addView(chip)
+                }
+                binding.chipGroupAttendees.visibility = View.VISIBLE
+            } else if (event.attendeeIds.isNotEmpty()) {
+                // Fallback: show count for old events without names
+                binding.chipGroupAttendees.visibility = View.GONE
+            } else {
+                binding.chipGroupAttendees.visibility = View.GONE
+            }
 
             // Image
             if (event.imageUrl.isNotBlank()) {

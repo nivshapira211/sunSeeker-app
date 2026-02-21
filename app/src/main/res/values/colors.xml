@@ -55,4 +55,14 @@
 
     <!-- Scrim -->
     <color name="scrim_overlay">#66000000</color>
+
+    <!-- Auth Screens -->
+    <color name="auth_input_bg">#40FFFFFF</color>
+    <color name="auth_input_stroke">#44FFFFFF</color>
+    <color name="auth_input_hint">#BBFFFFFF</color>
+    <color name="auth_text_white">#FFFFFF</color>
+    <color name="auth_text_dark">#2C1810</color>
+    <color name="auth_button_start">#FFCB74</color>
+    <color name="auth_button_end">#F4A942</color>
+    <color name="auth_link_text">#FFFFFFCC</color>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Base gradient: soft peach to warm amber/orange -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:startColor="#3D2B5A"
+                android:centerColor="#D4765E"
+                android:endColor="#F5B97D"
+                android:angle="270" />
+        </shape>
+    </item>
+    <!-- Warm bright glow in upper-center (the sun area) -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:centerX="0.5"
+                android:centerY="0.38"
+                android:gradientRadius="500"
+                android:startColor="#AAFFC988"
+                android:endColor="#00FFC988" />
+        </shape>
+    </item>
+    <!-- Light peach wash over the middle -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:centerX="0.5"
+                android:centerY="0.55"
+                android:gradientRadius="600"
+                android:startColor="#55FFD4A0"
+                android:endColor="#00FFD4A0" />
+        </shape>
+    </item>
+</layer-list>
