@@ -151,6 +151,22 @@ class EventDetailsFragment : Fragment(R.layout.fragment_event_details) {
                 null -> Unit
             }
         }
+
+        viewModel.deleteState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UiState.Loading -> setLoading(true)
+                is UiState.Success -> {
+                    viewModel.clearDeleteState()
+                    findNavController().popBackStack()
+                }
+                is UiState.Error -> {
+                    setLoading(false)
+                    Snackbar.make(binding.root, state.message, Snackbar.LENGTH_LONG).show()
+                    viewModel.clearDeleteState()
+                }
+                null -> Unit
+            }
+        }
     }
 
     private fun setLoading(isLoading: Boolean) {

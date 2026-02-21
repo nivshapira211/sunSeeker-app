@@ -45,6 +45,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     private var selectedLocationName: String? = null
     private var selectedDateTime: java.util.Calendar? = null
     private var selectedSunType: String? = null
+    private var savedTimeString: String? = null
     private var formPopulated = false
 
 
@@ -52,6 +53,11 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentCreateEventBinding.bind(view)
+
+        // Restore form state if view was recreated (e.g. after map picker)
+        if (formPopulated) {
+            restoreFormState()
+        }
 
         // Listen for result from MapPickerFragment
         val savedStateHandle = findNavController().currentBackStackEntry?.savedStateHandle
@@ -85,6 +91,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 
                 selectedLocationName = event.location
                 binding.textSelectedLocation.text = event.location
+                savedTimeString = event.time
                 binding.textSelectedTime.text = event.time
                 binding.textSelectedTime.setTextColor(resources.getColor(android.R.color.black, null))
                 
@@ -244,7 +251,8 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
                 selectedDateTime = pickedDateTime
                 
                 val format = java.text.SimpleDateFormat("MMM dd, yyyy h:mm a", java.util.Locale.getDefault())
-                binding.textSelectedTime.text = format.format(pickedDateTime.time)
+                savedTimeString = format.format(pickedDateTime.time)
+                binding.textSelectedTime.text = savedTimeString
                 binding.textSelectedTime.setTextColor(resources.getColor(android.R.color.black, null))
                 
             }, startHour, startMinute, false).show()
@@ -265,6 +273,40 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
         binding.progressSubmit.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.buttonSubmit.isEnabled = !isLoading
         binding.imagePreview.isEnabled = !isLoading
+    }
+
+    private fun restoreFormState() {
+        // Restore location
+        if (!selectedLocationName.isNullOrBlank()) {
+            binding.textSelectedLocation.text = selectedLocationName
+            binding.textSelectedLocation.setTextColor(resources.getColor(android.R.color.black, null))
+        }
+        // Restore time
+        if (!savedTimeString.isNullOrBlank()) {
+            binding.textSelectedTime.text = savedTimeString
+            binding.textSelectedTime.setTextColor(resources.getColor(android.R.color.black, null))
+        }
+        // Restore image
+        if (selectedImageUri != null) {
+            binding.imagePreview.setImageURI(selectedImageUri)
+            binding.textAddPhotoHint.visibility = View.GONE
+        } else if (existingImageUrl.isNotBlank()) {
+            Glide.with(this).load(existingImageUrl).into(binding.imagePreview)
+            binding.textAddPhotoHint.visibility = View.GONE
+        }
+        // Restore sun type chips
+        if (selectedSunType != null) {
+            binding.chipGroupSunTimes.visibility = View.VISIBLE
+            when (selectedSunType) {
+                "sunrise" -> binding.chipSunrise.isChecked = true
+                "sunset" -> binding.chipSunset.isChecked = true
+            }
+        }
+        // Restore edit mode header
+        if (args.eventId != null) {
+            binding.textTitle.text = "Edit Event"
+            binding.buttonSubmit.text = "Save Changes"
+        }
     }
 
     override fun onDestroyView() {
