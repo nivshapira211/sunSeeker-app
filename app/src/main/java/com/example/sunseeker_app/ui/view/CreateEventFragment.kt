@@ -45,6 +45,7 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
     private var selectedLocationName: String? = null
     private var selectedDateTime: java.util.Calendar? = null
     private var selectedSunType: String? = null
+    private var formPopulated = false
 
 
 
@@ -76,7 +77,9 @@ class CreateEventFragment : Fragment(R.layout.fragment_create_event) {
             binding.textTitle.text = "Edit Event"
             binding.buttonSubmit.text = "Save Changes"
             viewModel.loadEvent(eventId).observe(viewLifecycleOwner) { event ->
-                if (event == null) return@observe
+                if (event == null || formPopulated) return@observe
+                formPopulated = true
+
                 binding.editTitle.setText(event.title)
                 binding.editDescription.setText(event.description)
                 

@@ -44,7 +44,7 @@ class MapPickerFragment : Fragment(R.layout.fragment_map_picker), OnMapReadyCall
     private var selectedLatLng: LatLng? = null
     private var selectedAddress: String? = null
 
-    private lateinit var placesClient: PlacesClient
+    private var placesClient: PlacesClient? = null
     private var sessionToken = AutocompleteSessionToken.newInstance()
     private var autocompleteAdapter: ArrayAdapter<String>? = null
     private val predictionPlaceIds = mutableListOf<String>()
@@ -61,13 +61,16 @@ class MapPickerFragment : Fragment(R.layout.fragment_map_picker), OnMapReadyCall
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentMapPickerBinding.bind(view)
 
-        // Initialize Places
-        if (!Places.isInitialized()) {
-            try {
-                Places.initialize(requireContext(), getString(R.string.google_maps_key))
-            } catch (_: Exception) { }
-        }
-        placesClient = Places.createClient(requireContext())
+        // Initialize Places (autocomplete won't work without a valid API key)
+        try {
+            val apiKey = getString(R.string.google_maps_key)
+            if (apiKey.isNotBlank()) {
+                if (!Places.isInitialized()) {
+                    Places.initialize(requireContext(), apiKey)
+                }
+                placesClient = Places.createClient(requireContext())
+            }
+        } catch (_: Exception) { }
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -128,12 +131,14 @@ class MapPickerFragment : Fragment(R.layout.fragment_map_picker), OnMapReadyCall
     }
 
     private fun fetchPredictions(query: String) {
+        val client = placesClient ?: return
+
         val request = FindAutocompletePredictionsRequest.builder()
             .setSessionToken(sessionToken)
             .setQuery(query)
             .build()
 
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+        client.findAutocompletePredictions(request).addOnSuccessListener { response ->
             val suggestions = mutableListOf<String>()
             predictionPlaceIds.clear()
             for (prediction in response.autocompletePredictions) {
