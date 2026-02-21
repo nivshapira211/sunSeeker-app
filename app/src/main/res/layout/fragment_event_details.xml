@@ -142,13 +142,21 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/text_attendees"
+                android:id="@+id/text_attendees_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/event_attendees_none"
+                android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_attendees"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@string/event_attendees_none"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" 
-                android:textColor="?android:attr/textColorSecondary"/>
+                app:chipSpacingVertical="4dp"
+                app:chipSpacingHorizontal="8dp" />
                 
             <Space
                 android:layout_width="match_parent"

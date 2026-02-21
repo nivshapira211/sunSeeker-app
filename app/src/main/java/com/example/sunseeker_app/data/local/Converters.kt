@@ -13,4 +13,19 @@ class Converters {
         if (value.isBlank()) return emptyList()
         return value.split("|")
     }
+
+    @TypeConverter
+    fun fromStringMap(value: Map<String, String>): String {
+        return value.entries.joinToString(separator = "|") { "${it.key}=${it.value}" }
+    }
+
+    @TypeConverter
+    fun toStringMap(value: String): Map<String, String> {
+        if (value.isBlank()) return emptyMap()
+        return value.split("|").mapNotNull { entry ->
+            val parts = entry.split("=", limit = 2)
+            if (parts.size == 2) parts[0] to parts[1] else null
+        }.toMap()
+    }
 }
+

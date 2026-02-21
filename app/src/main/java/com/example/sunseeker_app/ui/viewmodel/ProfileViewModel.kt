@@ -51,7 +51,8 @@ class ProfileViewModel @Inject constructor(
         _joinState.value = UiState.Loading
         viewModelScope.launch {
             try {
-                eventsRepository.joinEvent(eventId, userId)
+                val displayName = authRepository.getCurrentDisplayName()
+                eventsRepository.joinEvent(eventId, userId, displayName)
                 _joinState.value = UiState.Success("Joined event")
             } catch (e: Exception) {
                 _joinState.value = UiState.Error(e.message ?: "Join failed")

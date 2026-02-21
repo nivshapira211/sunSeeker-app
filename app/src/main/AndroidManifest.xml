@@ -8,6 +8,9 @@
 
     <queries>
         <package android:name="com.google.android.gms" />
+        <intent>
+            <action android:name="com.google.android.geo.API_KEY" />
+        </intent>
     </queries>
 
     <application

@@ -1,5 +1,6 @@
 package com.example.sunseeker_app.ui.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,14 +18,20 @@ class RegisterViewModel @Inject constructor(
     private val _state = MutableLiveData<RegisterState>()
     val state: LiveData<RegisterState> = _state
 
-    fun register(email: String, password: String) {
+    fun register(email: String, password: String, displayName: String, photoUri: Uri?) {
         _state.value = RegisterState.Loading
         viewModelScope.launch {
             val result = authRepository.register(email.trim(), password)
-            _state.value = if (result.isSuccess) {
-                RegisterState.Success
+            if (result.isSuccess) {
+                try {
+                    authRepository.updateProfile(displayName.trim(), photoUri)
+                    _state.value = RegisterState.Success
+                } catch (e: Exception) {
+                    // Registration succeeded but profile update failed — still navigate
+                    _state.value = RegisterState.Success
+                }
             } else {
-                RegisterState.Error(result.errorMessage ?: "Registration failed")
+                _state.value = RegisterState.Error(result.errorMessage ?: "Registration failed")
             }
         }
     }

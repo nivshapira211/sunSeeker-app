@@ -51,6 +51,10 @@ class EventsRepository @Inject constructor(
                 val attendeeIds = (doc.get("attendees") as? List<*>)
                     ?.mapNotNull { it as? String }
                     ?: emptyList()
+                val attendeeNames = (doc.get("attendeeNames") as? Map<*, *>)
+                    ?.mapNotNull { (k, v) -> if (k is String && v is String) k to v else null }
+                    ?.toMap()
+                    ?: emptyMap()
 
                 EventEntity(
                     id = id,
@@ -61,6 +65,7 @@ class EventsRepository @Inject constructor(
                     imageUrl = imageUrl,
                     participantsCount = participantsCount,
                     attendeeIds = attendeeIds,
+                    attendeeNames = attendeeNames,
                     creatorId = creatorId
                 )
             }
@@ -69,11 +74,13 @@ class EventsRepository @Inject constructor(
         }
     }
 
-    suspend fun joinEvent(eventId: String, userId: String) {
+    suspend fun joinEvent(eventId: String, userId: String, displayName: String?) {
         withContext(Dispatchers.IO) {
             val eventRef = firestore.collection(EVENTS_COLLECTION).document(eventId)
             eventRef.update("attendees", FieldValue.arrayUnion(userId)).await()
             eventRef.update("participantsCount", FieldValue.increment(1)).await()
+            val name = displayName ?: "User"
+            eventRef.update("attendeeNames.$userId", name).await()
             refreshEvents()
         }
     }
@@ -83,6 +90,7 @@ class EventsRepository @Inject constructor(
             val eventRef = firestore.collection(EVENTS_COLLECTION).document(eventId)
             eventRef.update("attendees", FieldValue.arrayRemove(userId)).await()
             eventRef.update("participantsCount", FieldValue.increment(-1)).await()
+            eventRef.update("attendeeNames.$userId", FieldValue.delete()).await()
             refreshEvents()
         }
     }
@@ -143,5 +151,6 @@ private fun EventEntity.toDomain() = Event(
     imageUrl = imageUrl,
     participantsCount = participantsCount,
     attendeeIds = attendeeIds,
+    attendeeNames = attendeeNames,
     creatorId = creatorId
 )

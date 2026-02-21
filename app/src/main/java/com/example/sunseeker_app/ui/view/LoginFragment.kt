@@ -34,6 +34,16 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         binding.buttonLogin.setOnClickListener {
             val email = binding.editEmail.text?.toString().orEmpty()
             val password = binding.editPassword.text?.toString().orEmpty()
+
+            if (email.isBlank()) {
+                Snackbar.make(binding.root, "Please enter your email", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (password.isBlank()) {
+                Snackbar.make(binding.root, "Please enter your password", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             viewModel.login(email, password)
         }
 
